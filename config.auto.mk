@@ -31,6 +31,9 @@ BUILDENV_SunOS=sun
 
 include $(BUILD)config.$(BUILDENV).mk
 
+# Make sure 'all' remains the first target seen
+all: $(TARGET)
+
 hello: warn-buildenv
 
 warn-buildenv:
