@@ -22,7 +22,8 @@ for at least one much larger program.
 * Built-in help (`make help`)
 * Pure `make`, allowing you to use standard `Makefile` syntax and features
 * Supports parallel builds
-* Supports separate libraries with accelerated build
+* Supports separate libraries, to accelerate builds (libraries are
+  only built the first time, unless you request a "deep" build)
 
 
 ## Using build
