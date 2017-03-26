@@ -19,7 +19,7 @@ for at least one much larger program.
 * Rules to build various targets (optimized, debug, release, profile)
 * Rule modifiers for common build options, e.g. `v-debug` for verbose debug
 * Personal preferences easily defined with environment variables
-* Built-in help (make help)
+* Built-in help (`make help`)
 * Pure `make`, allowing you to use standard `Makefile` syntax and features
 * Supports parallel builds
 * Supports separate libraries with accelerated build
