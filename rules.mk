@@ -165,11 +165,11 @@ product.runtest: product .ALWAYS
 	$(PRINT_TEST) $(OBJROOT_EXE) $(PRODUCTS_OPTS)
 
 # Installing the product: always need to build it first
-%.install_exe: $(PREFIX_BIN)
+%.install_exe: $(PREFIX_BIN).mkdir
 	$(PRINT_INSTALL) $(INSTALL) $* $(PREFIX_BIN)
-%.install_lib: $(PREFIX_LIB)
+%.install_lib: $(PREFIX_LIB).mkdir
 	$(PRINT_INSTALL) $(INSTALL) $* $(PREFIX_LIB)
-%.install_dll: $(PREFIX_DLL)
+%.install_dll: $(PREFIX_DLL).mkdir
 	$(PRINT_INSTALL) $(INSTALL) $* $(PREFIX_DLL)
 
 # Benchmarking (always done with profile target)
