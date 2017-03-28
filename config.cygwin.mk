@@ -19,7 +19,7 @@
 #See file COPYING for details.
 #******************************************************************************
 
-DEFINES_cygwin=CONFIG_MINGW UNICODE _WIN32 WIN32
+DEFINES_cygwin=CONFIG_CYGWIN UNICODE _WIN32 WIN32
 OS_NAME_cygwin=windows
 
 include $(BUILD)config.mingw.mk
