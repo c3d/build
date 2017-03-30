@@ -338,7 +338,6 @@ endif
 # libraries and we may otherwise end up building the same
 # library multiple times "in parallel" (wasting energy)
 ifdef SUBDIRS
-$(info not parallel)
 $(NOT_PARALLEL):
 endif
 
