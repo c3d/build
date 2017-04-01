@@ -40,47 +40,57 @@ ifndef DIR
 
 # So this is necessary for the substitution to happen correctly. Ugh!
 BASEDIR:=       $(shell cd ./$(BUILD)/..; pwd)
-FULLDIR:=   $(shell cd ./; pwd)
+FULLDIR:=       $(shell cd ./; pwd)
 DIR:=           $(subst $(BASEDIR),,$(FULLDIR))
 PRETTY_DIR:=    $(subst $(BASEDIR),[top],$(FULLDIR))
 BASENAME_DIR:=  $(shell basename $(FULLDIR))
 BUILD_DATE:=    $(shell /bin/date '+%Y%m%d-%H%M%S')
 OBJROOT:=       $(BUILDOBJ)/$(BUILDENV)/$(TARGET)$(BASE_EXTRA_DEPTH)
-BUILD_LOG:= $(BUILD_LOGS)build-$(BUILDENV)-$(TARGET)-$(BUILD_DATE).log
+BUILD_LOG:=     $(BUILD_LOGS)build-$(BUILDENV)-$(TARGET)-$(BUILD_DATE).log
 endif
 
 # Configuration variables
-OBJDIR:=	$(OBJROOT)$(DIR)
-OBJECTS:=	$(SOURCES:%=$(OBJDIR)/%$(OBJ_EXT))
-PRODUCTS_EXE:=	$(patsubst %.exe,%$(EXE_EXT),$(filter %.exe,$(PRODUCTS)))
-PRODUCTS_LIB:=	$(patsubst %.lib,%$(LIB_EXT),$(filter %.lib,$(PRODUCTS)))
-PRODUCTS_DLL:=	$(patsubst %.dll,%$(DLL_EXT),$(filter %.dll,$(PRODUCTS)))
-PRODUCTS_OTHER:=	$(filter-out %.exe %.lib %.dll %$(EXE_EXT) %$(LIB_EXT) %$(DLL_EXT), $(PRODUCTS))
-OBJROOT_EXE:=	$(PRODUCTS_EXE:%=$(OBJROOT)/%)
-OBJROOT_LIB:=	$(PRODUCTS_LIB:%=$(OBJROOT)/%)
-OBJROOT_DLL:=	$(PRODUCTS_DLL:%=$(OBJROOT)/%)
-OBJROOT_OTHER:=	$(PRODUCTS_OTHER:%=$(OBJROOT)/%)
-OBJPRODUCTS:=	$(OBJROOT_EXE) $(OBJROOT_LIB) $(OBJROOT_DLL) $(OBJROOT_OTHER)
+OBJDIR:=        $(OBJROOT)$(DIR)
+OBJECTS:=       $(SOURCES:%=$(OBJDIR)/%$(OBJ_EXT))
+PRODUCTS_EXE:=  $(patsubst %.exe,%$(EXE_EXT),$(filter %.exe,$(PRODUCTS)))
+PRODUCTS_LIB:=  $(patsubst %.lib,%$(LIB_EXT),$(filter %.lib,$(PRODUCTS)))
+PRODUCTS_DLL:=  $(patsubst %.dll,%$(DLL_EXT),$(filter %.dll,$(PRODUCTS)))
+PRODUCTS_OTHER:=$(filter-out %.exe %.lib %.dll %$(EXE_EXT) %$(LIB_EXT) %$(DLL_EXT), $(PRODUCTS))
+OBJROOT_EXE:=   $(PRODUCTS_EXE:%=$(OBJROOT)/%)
+OBJROOT_LIB:=   $(PRODUCTS_LIB:%=$(OBJROOT)/%)
+OBJROOT_DLL:=   $(PRODUCTS_DLL:%=$(OBJROOT)/%)
+OBJROOT_OTHER:= $(PRODUCTS_OTHER:%=$(OBJROOT)/%)
+OBJPRODUCTS:=   $(OBJROOT_EXE) $(OBJROOT_LIB) $(OBJROOT_DLL) $(OBJROOT_OTHER)
 
-LIBNAMES:=	$(notdir $(LIBRARIES))
-OBJLIBRARIES:=	$(LIBNAMES:%=$(OBJROOT)/%$(LIB_EXT))
-LINK_INPUTS:=	$(OBJECTS) $(SUBLIBS) $(OBJLIBRARIES)
-ifneq ($(words $(LINK_INPUTS)),0)
-LINK_WINPUTS=	$(patsubst %,"%", $(shell cygpath -aw $(LINK_INPUTS)))
+# Check a common mistake with PRODUCTS= not being set or set without extension
+# Even on Linux / Unix, the PRODUCTS variable must end in .exe for executables,
+# in .lib for static libraries, and in .dll for dynamic libraries.
+# This is to help executable build rules be more robust and not catch
+# unknown extensions by mistake. The extension is replaced with the
+# correct platform extension, i.e. .a for static libraries on Linux
+ifeq ($(PRODUCTS_EXE)$(PRODUCTS_LIB)$(PRODUCTS_DLL),)
+$(error Error: Variable PRODUCTS must end in .exe, .lib or .dll)
 endif
-PRINT_DIR=		--no-print-directory
+
+LIBNAMES:=      $(notdir $(LIBRARIES))
+OBJLIBRARIES:=  $(LIBNAMES:%=$(OBJROOT)/%$(LIB_EXT))
+LINK_INPUTS:=   $(OBJECTS) $(LINK_LIBS) $(OBJLIBRARIES)
+ifneq ($(words $(LINK_INPUTS)),0)
+LINK_WINPUTS=   $(patsubst %,"%", $(shell cygpath -aw $(LINK_INPUTS)))
+endif
+PRINT_DIR=              --no-print-directory
 RECURSE_BUILDENV=$(BUILDENV)
-RECURSE_CMD=	$(MAKE) $(PRINT_DIR) TARGET=$(TARGET) BUILDENV=$(RECURSE_BUILDENV) $(RECURSE) COLORIZE=
+RECURSE_CMD=    $(MAKE) $(PRINT_DIR) TARGET=$(TARGET) BUILDENV=$(RECURSE_BUILDENV) $(RECURSE) COLORIZE=
 MAKEFILE_DEPS:= Makefile                             \
                 $(BUILD)rules.mk                     \
                 $(BUILD)config.mk                    \
                 $(BUILD)config.$(BUILDENV).mk
-NOT_PARALLEL?=	.NOTPARALLEL
-BUILD_LOW?=	0
-BUILD_HIGH?=	100
-BUILD_INDEX:=	1
-BUILD_COUNT:=	$(words $(SOURCES))
-GIT_REVISION:=	$(shell git rev-parse --short HEAD 2> /dev/null || echo "unknown")
+NOT_PARALLEL?=  .NOTPARALLEL
+BUILD_LOW?=     0
+BUILD_HIGH?=    100
+BUILD_INDEX:=   1
+BUILD_COUNT:=   $(words $(SOURCES))
+GIT_REVISION:=  $(shell git rev-parse --short HEAD 2> /dev/null || echo "unknown")
 PROFILE_OUTPUT:=$(subst $(EXE_EXT),,$(OBJROOT_EXE))_prof_$(GIT_REVISION).vsp
 
 #------------------------------------------------------------------------------
@@ -90,12 +100,16 @@ PROFILE_OUTPUT:=$(subst $(EXE_EXT),,$(OBJROOT_EXE))_prof_$(GIT_REVISION).vsp
 all: $(TARGET)
 
 debug opt release profile: logs.mkdir
-	$(PRINT_COMMAND) $(TIME) \
-	$(MAKE) TARGET=$@ RECURSE=build build $(LOG_COMMANDS)
+	$(PRINT_COMMAND) $(TIME) $(MAKE) TARGET=$@ RECURSE=build LOG_COMMANDS= build $(LOG_COMMANDS)
 
-check:	all test
+# Testing
+test tests check:
+	$(PRINT_COMMAND) $(MAKE) RECURSE=test $(TESTS:%=%.runtest) LOG_COMMANDS= $(LOG_COMMANDS)
+
+# Clean builds
 startup restart rebuild: clean all
 
+# Installation
 install: hello.install                          \
         $(OBJROOT_EXE:%=%.install_exe)          \
         $(OBJROOT_LIB:%=%.install_lib)          \
@@ -156,19 +170,16 @@ objects:$(OBJDIR:%=%/.mkdir) $(OBJECTS)
 prebuild:
 postbuild:
 
-# Testing
-test tests: $(TESTS:%=%.runtest)
-
 # Run the test (in the object directory)
 product.runtest: product .ALWAYS
 	$(PRINT_TEST) $(OBJROOT_EXE) $(PRODUCTS_OPTS)
 
-# Run a test from a C or C++ file
-%.c.runtest: product .ALWAYS
-	$(PRINT_TEST) $(MAKE) SOURCES=$*.c LIBRARIES=$(PRODUCTS_LIB) PRODUCTS=$*
+# Run a test from a C or C++ file to link against current library
+%.c.runtest: $(OBJROOT_LIB) .ALWAYS
+	$(PRINT_BUILD) $(MAKE) SOURCES=$*.c LINK_LIBS=$(OBJROOT_LIB) PRODUCTS=$*.exe $(TARGET)
 	$(PRINT_TEST) $(OBJROOT)/$*
-%.cpp.runtest: product .ALWAYS
-	$(PRINT_TEST) $(MAKE) SOURCES=$*.cpp LIBRARIES=$(PRODUCTS_LIB) PRODUCTS=$*
+%.cpp.runtest: $(OBJROOT_LIB) .ALWAYS
+	$(PRINT_BUILD) $(MAKE) SOURCES=$*.cpp LINK_LIBS=$(OBJROOT_LIB) PRODUCTS=$*.exe $(TARGET)
 	$(PRINT_TEST) $(OBJROOT)/$*
 
 # Installing the product: always need to build it first
@@ -244,6 +255,8 @@ else
 %.recurse:          | hello prebuild
 	+$(PRINT_COMMAND) cd $* && $(RECURSE_CMD)
 endif
+
+# If LIBRARIES=foo/bar, go to directory foo/bar, which should build bar.a
 $(OBJROOT)/%$(LIB_EXT): $(DEEP_BUILD)
 	+$(PRINT_COMMAND) cd $(filter %$*, $(LIBRARIES) $(SUBDIRS)) && $(RECURSE_CMD)
 %/.runtest:
@@ -269,7 +282,6 @@ PRINT_COMMAND= 	@
 PRINT_COMPILE=	$(PRINT_COMMAND) $(INFO) "[COMPILE$(PRINT_COUNT)] " $<;
 PRINT_BUILD= 	$(PRINT_COMMAND) $(INFO) "[BUILD]" $(shell basename $@);
 PRINT_GENERATE= $(PRINT_COMMAND) $(INFO) "[GENERATE]" $(shell basename $@);
-PRINT_TEST= 	$(PRINT_COMMAND) $(INFO) "[TEST]" $(shell basename $<);
 PRINT_INSTALL=  $(PRINT_COMMAND) $(INFO) "[INSTALL] " $(*F) in $(<D);
 PRINT_COPY=     $(PRINT_COMMAND) $(INFO) "[COPY]" $(*F) into $(@D) ;
 PRINT_DEPEND= 	$(PRINT_COMMAND) $(INFO) "[DEPEND] " $< ;
