@@ -52,9 +52,9 @@ endif
 # Configuration variables
 OBJDIR:=	$(OBJROOT)$(DIR)
 OBJECTS:=	$(SOURCES:%=$(OBJDIR)/%$(OBJ_EXT))
-PRODUCTS_EXE:=	$(patsubst %.exe,%$(EXE_EXT),$(filter %.exe %$(EXE_EXT),$(PRODUCTS)))
-PRODUCTS_LIB:=	$(patsubst %.lib,%$(LIB_EXT),$(filter %.lib %$(LIB_EXT),$(PRODUCTS)))
-PRODUCTS_DLL:=	$(patsubst %.dll,%$(DLL_EXT),$(filter %.dll %$(DLL_EXT),$(PRODUCTS)))
+PRODUCTS_EXE:=	$(patsubst %.exe,%$(EXE_EXT),$(filter %.exe,$(PRODUCTS)))
+PRODUCTS_LIB:=	$(patsubst %.lib,%$(LIB_EXT),$(filter %.lib,$(PRODUCTS)))
+PRODUCTS_DLL:=	$(patsubst %.dll,%$(DLL_EXT),$(filter %.dll,$(PRODUCTS)))
 PRODUCTS_OTHER:=	$(filter-out %.exe %.lib %.dll %$(EXE_EXT) %$(LIB_EXT) %$(DLL_EXT), $(PRODUCTS))
 OBJROOT_EXE:=	$(PRODUCTS_EXE:%=$(OBJROOT)/%)
 OBJROOT_LIB:=	$(PRODUCTS_LIB:%=$(OBJROOT)/%)
@@ -82,7 +82,6 @@ BUILD_INDEX:=	1
 BUILD_COUNT:=	$(words $(SOURCES))
 GIT_REVISION:=	$(shell git rev-parse --short HEAD 2> /dev/null || echo "unknown")
 PROFILE_OUTPUT:=$(subst $(EXE_EXT),,$(OBJROOT_EXE))_prof_$(GIT_REVISION).vsp
-
 
 #------------------------------------------------------------------------------
 #   User targets
@@ -163,6 +162,14 @@ test tests: $(TESTS:%=%.runtest)
 # Run the test (in the object directory)
 product.runtest: product .ALWAYS
 	$(PRINT_TEST) $(OBJROOT_EXE) $(PRODUCTS_OPTS)
+
+# Run a test from a C or C++ file
+%.c.runtest: product .ALWAYS
+	$(PRINT_TEST) $(MAKE) SOURCES=$*.c LIBRARIES=$(PRODUCTS_LIB) PRODUCTS=$*
+	$(PRINT_TEST) $(OBJROOT)/$*
+%.cpp.runtest: product .ALWAYS
+	$(PRINT_TEST) $(MAKE) SOURCES=$*.cpp LIBRARIES=$(PRODUCTS_LIB) PRODUCTS=$*
+	$(PRINT_TEST) $(OBJROOT)/$*
 
 # Installing the product: always need to build it first
 %.install_exe: $(PREFIX_BIN).mkdir
