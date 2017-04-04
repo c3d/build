@@ -283,7 +283,7 @@ PRINT_COMPILE=	$(PRINT_COMMAND) $(INFO) "[COMPILE$(PRINT_COUNT)] " $<;
 PRINT_BUILD= 	$(PRINT_COMMAND) $(INFO) "[BUILD]" $(shell basename $@);
 PRINT_GENERATE= $(PRINT_COMMAND) $(INFO) "[GENERATE]" $(shell basename $@);
 PRINT_INSTALL=  $(PRINT_COMMAND) $(INFO) "[INSTALL] " $(*F) in $(<D);
-PRINT_COPY=     $(PRINT_COMMAND) $(INFO) "[COPY]" $(*F) into $(@D) ;
+PRINT_COPY=     $(PRINT_COMMAND) $(INFO) "[COPY]" $(<F) => $(@D) ;
 PRINT_DEPEND= 	$(PRINT_COMMAND) $(INFO) "[DEPEND] " $< ;
 PRINT_TEST= 	$(PRINT_COMMAND) $(INFO) "[TEST] " $(@:.runtest=) ;
 
