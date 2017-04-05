@@ -320,6 +320,7 @@ OBJ_DEPS=$(OBJDIR_DEPS) $(MAKEFILE_DEPS) | hello prebuild
 # http://scottmcpeak.com/autodepend/autodepend.html
 POSTPROCESS_DEPENDENCY=                             \
     ( sed -e 's/.*://' -e 's/\\$$//' < $@ |         \
+      fmt -1 |                                      \
       sed -e 's/^ *//' -e 's/$$/:/' >> $@ )
 
 $(OBJDIR)/%.c$(OBJ_EXT).d:		%.c		$(OBJ_DEPS)

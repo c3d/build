@@ -28,6 +28,11 @@ OS_NAME_mingw=windows
 
 include $(BUILD)config.gnu.mk
 
+# We need a special treatment of this on Windows
+POSTPROCESS_DEPENDENCY=                             		\
+    ( sed -e 's/.*://' -e 's/\\$$//' < $@ |         		\
+      sed -e 's/^ *//' -e 's/$$/:/' -e 's/\\\\:$$/:/' >> $@ )
+
 # Windows overrides for extensions
 EXE_EXT=        .exe
 LIB_EXT=        .lib
