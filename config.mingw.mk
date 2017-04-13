@@ -37,3 +37,6 @@ POSTPROCESS_DEPENDENCY=                             		\
 EXE_EXT=        .exe
 LIB_EXT=        .lib
 DLL_EXT=        .dll
+
+# MinGW has no 'install' program
+INSTALL=	cp
