@@ -132,7 +132,7 @@ SEDOPT_windows=	-u
 
 # Colorize warnings, errors and progress information
 LINE_BUFFERED=--line-buffered
-COLORIZE:=  | grep $(LINE_BUFFERED) -v -e "^true &&" -e "^[A-Za-z0-9_-]\+\.\(c\|h\|cpp\|hpp\)$$"            \
+COLORIZE=   | grep $(LINE_BUFFERED) -v -e "^true &&" -e "^[A-Za-z0-9_-]\+\.\(c\|h\|cpp\|hpp\)$$"            \
             | sed $(SEDOPT_$(OS_NAME))                                                                      \
             -e 's/^\(.*[,:(]\{1,\}[0-9]*[ :)]*\)\([Ww]arning\)/$(POS_COLOR)\1$(WRN_COLOR)\2$(DEF_COLOR)/g'  \
             -e 's/^\(.*[,:(]\{1,\}[0-9]*[ :)]*\)\([Ee]rror\)/$(POS_COLOR)\1$(ERR_COLOR)\2$(DEF_COLOR)/g'    \
