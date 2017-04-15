@@ -30,6 +30,9 @@ SHELL=      /bin/bash
 # Default target
 TARGET?=        opt
 
+# Default build environment if not set
+BUILDENV?=auto
+
 # Default location for object files
 BUILD_OBJECTS?= $(BUILD)objects
 
@@ -49,15 +52,6 @@ PREFIX?=/usr/local/
 PREFIX_BIN?=$(PREFIX)bin/
 PREFIX_LIB?=$(PREFIX)lib/
 PREFIX_DLL?=$(PREFIX_LIB)
-
-
-#------------------------------------------------------------------------------
-#   Build rules
-#------------------------------------------------------------------------------
-
-# Include actual configuration for BUILDENV
-BUILDENV?=auto
-include $(BUILD)config.$(BUILDENV).mk
 
 
 #------------------------------------------------------------------------------
@@ -174,3 +168,11 @@ HELLO_clean=    CLEAN
 HELLO_install=  INSTALL
 HELLO_test=     TEST
 HELLO_bench=    BENCH
+
+
+#------------------------------------------------------------------------------
+#   Build configuration and rules
+#------------------------------------------------------------------------------
+
+# Include actual configuration for specific BUILDENV - At end for overrides
+include $(BUILD)config.$(BUILDENV).mk
