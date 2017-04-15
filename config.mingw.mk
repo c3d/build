@@ -33,6 +33,10 @@ POSTPROCESS_DEPENDENCY=                             		\
     ( sed -e 's/.*://' -e 's/\\$$//' < $@ |         		\
       sed -e 's/^ *//' -e 's/$$/:/' -e 's/\\\\:$$/:/' >> $@ )
 
+# MinGW does not have --line-buffered for colorized builds
+LINE_BUFFERED=
+
+
 # Windows overrides for extensions
 EXE_EXT=        .exe
 LIB_EXT=        .lib
