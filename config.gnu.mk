@@ -25,7 +25,7 @@
 CC=             gcc
 CC99=           gcc -std=gnu99
 CXX=            g++
-CXX11=          g++ -std=gnu++0x
+CXX11=          g++ -std=c++11
 LD=             g++
 CPP=            gcc -E
 PYTHON=         python
