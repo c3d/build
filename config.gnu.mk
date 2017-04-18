@@ -40,7 +40,7 @@ INSTALL=	install
 #------------------------------------------------------------------------------
 
 CFLAGS_debug=   -g -Wall -fno-inline
-CFLAGS_opt=     -O3 -Wall
+CFLAGS_opt=     -g -O3 -Wall
 CFLAGS_release= -O3 -Wall
 CFLAGS_profile=	-pg
 CFLAGS_cxx=     -x c++
