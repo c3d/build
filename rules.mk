@@ -177,10 +177,10 @@ product.runtest: product .ALWAYS
 # Run a test from a C or C++ file to link against current library
 %.c.runtest: $(OBJROOT_LIB) .ALWAYS
 	$(PRINT_BUILD) $(MAKE) SOURCES=$*.c LINK_LIBS=$(OBJROOT_LIB) PRODUCTS=$*.exe $(TARGET)
-	$(PRINT_TEST) $(TEST_CMD_$*) $(OBJROOT)/$* $(TEST_ARGS_$*)
+	$(PRINT_TEST) $(TEST_CMD_$*) $(OBJROOT)/$*$(EXE_EXT) $(TEST_ARGS_$*)
 %.cpp.runtest: $(OBJROOT_LIB) .ALWAYS
 	$(PRINT_BUILD) $(MAKE) SOURCES=$*.cpp LINK_LIBS=$(OBJROOT_LIB) PRODUCTS=$*.exe $(TARGET)
-	$(PRINT_TEST) $(TEST_CMD_$*) $(OBJROOT)/$* $(TEST_ARGS_$*)
+	$(PRINT_TEST) $(TEST_CMD_$*) $(OBJROOT)/$*$(EXE_EXT) $(TEST_ARGS_$*)
 
 # Installing the product: always need to build it first
 %.install_exe: $(PREFIX_BIN).mkdir
