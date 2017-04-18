@@ -318,7 +318,7 @@ OBJ_DEPS=$(OBJDIR_DEPS) $(MAKEFILE_DEPS) | hello prebuild
 # generated dependency but no longer in the source code.
 # The trick is quite ugly, but fortunately documented here:
 # http://scottmcpeak.com/autodepend/autodepend.html
-POSTPROCESS_DEPENDENCY=                             \
+POSTPROCESS_DEPENDENCY?=                            \
     ( sed -e 's/.*://' -e 's/\\$$//' < $@ |         \
       fmt -1 |                                      \
       sed -e 's/^ *//' -e 's/$$/:/' >> $@ )
