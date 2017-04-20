@@ -104,7 +104,7 @@ debug opt release profile: logs.mkdir
 
 # Testing
 test tests check: $(TARGET)
-	$(PRINT_COMMAND) $(MAKE) RECURSE=test $(TESTS:%=%.runtest) LOG_COMMANDS= $(LOG_COMMANDS)
+	$(PRINT_COMMAND) $(MAKE) RECURSE=test $(TESTS:%=%.runtest) LOG_COMMANDS= TIME=
 
 # Clean builds
 startup restart rebuild: clean all
