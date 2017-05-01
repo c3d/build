@@ -299,7 +299,7 @@ logs.mkdir: $(dir $(BUILD_LOG))/.mkdir $(dir $(BUILD_SAVED_LOG))/.mkdir
 
 ifneq ($(filter $(MAKECMDGOALS:/=),$(SUBDIRS)),)
 $(MAKECMDGOALS): deep_build
-1	$(PRINT_COMMAND)	cd $@ && make
+	$(PRINT_COMMAND)	cd $@ && make
 endif
 
 
