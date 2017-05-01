@@ -46,7 +46,7 @@ CFLAGS_profile=	-pg
 CFLAGS_cxx=     -x c++
 LDFLAGS_debug=  -g
 LDFLAGS_profile=-pg
-
+DEPFLAGS=	-MD -MP -MF $(@).d -MT $@
 
 #------------------------------------------------------------------------------
 #  File extensions
@@ -62,8 +62,9 @@ DLL_EXT=        .so
 #  Build rules
 #------------------------------------------------------------------------------
 
-MAKE_CC=        $(CC)   $(CFLAGS)   $(CPPFLAGS_$*) $(CFLAGS_$*)   -c $< -o $@
-MAKE_CXX=       $(CXX)  $(CXXFLAGS) $(CPPFLAGS_$*) $(CXXFLAGS_$*) -c $< -o $@
+MAKE_CC=        $(CC)   $(CFLAGS)   $(CPPFLAGS_$*) $(CFLAGS_$*)   -c $< -o $@ $(DEPFLAGS)
+MAKE_CXX=       $(CXX)  $(CXXFLAGS) $(CPPFLAGS_$*) $(CXXFLAGS_$*) -c $< -o $@ $(DEPFLAGS)
+MAKE_AS=        $(CC)   $(CFLAGS)   $(CPPFLAGS_$*) $(CFLAGS_$*)   -c $< -o $@ $(DEPFLAGS)
 MAKE_OBJDIR=    mkdir -p $*                                       && touch $@
 MAKE_LIB=       $(AR) $@                        $(LINK_INPUTS)&& $(RANLIB) $@
 MAKE_DLL=       $(LIBTOOL) -shared              $(LINK_INPUTS)          -o $@
@@ -74,6 +75,6 @@ MAKE_EXE=       $(LD) -o $@ $(LINK_INPUTS) $(LDFLAGS) $(LDFLAGS_$*)
 #   Dependencies
 #------------------------------------------------------------------------------
 
-CC_DEPEND=      $(CC)  $(CPPFLAGS) $(CPPFLAGS_$*) -MM -MF $@ -MT $(@:.d=) $<
-CXX_DEPEND=     $(CXX) $(CPPFLAGS) $(CPPFLAGS_$*) -MM -MF $@ -MT $(@:.d=) $<
-AS_DEPEND=      $(CC)  $(CPPFLAGS) $(CPPFLAGS_$*) -MM -MF $@ -MT $(@:.d=) $<
+CC_DEPEND=      $(CC)  $(CPPFLAGS) $(CPPFLAGS_$*) -MM -MP -MF $@ -MT $(@:.d=) $<
+CXX_DEPEND=     $(CXX) $(CPPFLAGS) $(CPPFLAGS_$*) -MM -MP -MF $@ -MT $(@:.d=) $<
+AS_DEPEND=      $(CC)  $(CPPFLAGS) $(CPPFLAGS_$*) -MM -MP -MF $@ -MT $(@:.d=) $<

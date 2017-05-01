@@ -314,21 +314,16 @@ OBJDIR_DEPS=$(OBJDIR)/%.deps/.mkdir
 
 OBJ_DEPS=$(OBJDIR_DEPS) $(MAKEFILE_DEPS) | hello prebuild
 
-# The following is a trick to avoid errors if a header file appears in a
-# generated dependency but no longer in the source code.
-# The trick is quite ugly, but fortunately documented here:
-# http://scottmcpeak.com/autodepend/autodepend.html
-POSTPROCESS_DEPENDENCY?=                            \
-    ( sed -e 's/.*://' -e 's/\\$$//' < $@ |         \
-      fmt -1 |                                      \
-      sed -e 's/^ *//' -e 's/$$/:/' >> $@ )
-
+ifndef DEPFLAGS
 $(OBJDIR)/%.c$(OBJ_EXT).d:		%.c		$(OBJ_DEPS)
-	$(PRINT_DEPEND) ( $(CC_DEPEND)  && $(POSTPROCESS_DEPENDENCY) )
+	$(PRINT_DEPEND) ( $(CC_DEPEND)
 $(OBJDIR)/%.cpp$(OBJ_EXT).d:	%.cpp	$(OBJ_DEPS)
-	$(PRINT_DEPEND) ( $(CXX_DEPEND) && $(POSTPROCESS_DEPENDENCY) )
+	$(PRINT_DEPEND) ( $(CXX_DEPEND)
 $(OBJDIR)/%.s$(OBJ_EXT).d: 		%.s		$(OBJ_DEPS)
-	$(PRINT_DEPEND) ( $(AS_DEPEND)  && $(POSTPROCESS_DEPENDENCY) )
+	$(PRINT_DEPEND) ( $(AS_DEPEND)
+else
+$(OBJDIR)/%$(OBJ_EXT).d: $(OBJDIR)/%$(OBJ_EXT)
+endif
 
 
 #------------------------------------------------------------------------------
