@@ -150,7 +150,7 @@ help:
 #   Internal targets
 #------------------------------------------------------------------------------
 
-build: hello libraries recurse prebuild objects product postbuild goodbye
+build: hello config libraries recurse prebuild objects product postbuild goodbye
 
 hello:
 	@$(INFO) "[BEGIN]" $(TARGET) $(BUILDENV) in $(PRETTY_DIR)
@@ -167,6 +167,7 @@ product:$(OBJPRODUCTS)
 objects:$(OBJDIR:%=%/.mkdir) $(OBJECTS)
 
 # "Hooks" for pre and post build steps
+config: $(CONFIG:%=build-config.h)
 prebuild:
 postbuild:
 
@@ -281,11 +282,12 @@ PRINT_PCT=	$(shell printf "%3d%%" $$(( ($(BUILD_HIGH) - $(BUILD_LOW)) * $(BUILD_
 PRINT_COMMAND= 	@
 PRINT_COMPILE=	$(PRINT_COMMAND) $(INFO) "[COMPILE$(PRINT_COUNT)] " $<;
 PRINT_BUILD= 	$(PRINT_COMMAND) $(INFO) "[BUILD]" $(shell basename $@);
-PRINT_GENERATE= $(PRINT_COMMAND) $(INFO) "[GENERATE]" $(shell basename $@);
+PRINT_GENERATE= $(PRINT_COMMAND) $(INFO) "[GENERATE]" "$(shell basename "$@")";
 PRINT_INSTALL=  $(PRINT_COMMAND) $(INFO) "[INSTALL] " $(*F) in $(<D);
 PRINT_COPY=     $(PRINT_COMMAND) $(INFO) "[COPY]" $< '=>' $@ ;
 PRINT_DEPEND= 	$(PRINT_COMMAND) $(INFO) "[DEPEND] " $< ;
-PRINT_TEST= 	$(PRINT_COMMAND) $(INFO) "[TEST] " $(@:.runtest=) ;
+PRINT_TEST= 	$(PRINT_COMMAND) $(INFO) "[TEST]" $(@:.runtest=) ;
+PRINT_CONFIG= 	$(PRINT_COMMAND) $(INFO) "[CONFIG]" "$*" ;
 
 logs.mkdir: $(dir $(BUILD_LOG))/.mkdir $(dir $(BUILD_SAVED_LOG))/.mkdir
 %/.mkdir:
@@ -361,6 +363,23 @@ ifeq ($(MAKECMDGOALS),build)
 -include $(DEPENDENCIES)
 endif
 
+
+#------------------------------------------------------------------------------
+#   Configuration rules
+#------------------------------------------------------------------------------
+
+build-config.h: $(CONFIG:%=$(OBJDIR)/%)
+	$(PRINT_GENERATE) cat $(CONFIG:%="$(OBJDIR)/%") > $@
+$(OBJDIR)/HAVE_<%.h>: $(OBJDIR)/CONFIG_HAVE_%.c
+	$(PRINT_CONFIG) mkdir -p "$$(dirname "$@")" ; echo '#define HAVE_$*_h' $$($(CC) -c "$<" -o "$<".o > "$<".err 2>&1 && echo 1 || echo 0) | sed -e 's|[./\\]|_|g' > "$@"
+$(OBJDIR)/HAVE_<%>: $(OBJDIR)/CONFIG_HAVE_%.cpp
+	$(PRINT_CONFIG) mkdir -p "$$(dirname "$@")" ; echo '#define HAVE_$*' $$($(CXX) -c "$<" -o "$<".o > "$<".err 2>&1 && echo 1 || echo 0) | sed -e 's|[./\\]|_|g' > "$@"
+$(OBJDIR)/CONFIG_HAVE_%.c: $(OBJDIR)/.mkdir
+	$(PRINT_GENERATE) mkdir -p "$$(dirname "$@")" ; echo '#include' "<$*.h>" > "$@"
+$(OBJDIR)/CONFIG_HAVE_%.cpp: $(OBJDIR)/.mkdir
+	$(PRINT_GENERATE) mkdir -p "$$(dirname "$@")" ; echo '#include' "<$*>" > "$@"
+
+.PRECIOUS: $(OBJDIR)/CONFIG_HAVE_%.c
 
 #------------------------------------------------------------------------------
 #  Makefile optimization tricks
