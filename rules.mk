@@ -370,14 +370,19 @@ endif
 
 config.h: $(CONFIG:%=$(OBJDIR)/%)
 	$(PRINT_GENERATE) cat $(CONFIG:%="$(OBJDIR)/%") > $@
+
+# C standard headers, e.g. HAVE_<stdio.h>
 $(OBJDIR)/HAVE_<%.h>: $(OBJDIR)/CONFIG_HAVE_%.c
-	$(PRINT_CONFIG) mkdir -p "$$(dirname "$@")" ; echo '#define HAVE_$*_h' $$($(CC) $(CFLAGS) -c "$<" -o "$<".o > "$<".err 2>&1 && echo 1 || echo 0) | tr '[:lower:]' '[:upper:]' | sed -e 's/#DEFINE/#define/g' -e 's|[./\\]|_|g' > "$@"
-$(OBJDIR)/HAVE_<%>: $(OBJDIR)/CONFIG_HAVE_%.cpp
-	$(PRINT_CONFIG) mkdir -p "$$(dirname "$@")" ; echo '#define HAVE_$*' $$($(CXX) $(CXXFLAGS) -c "$<" -o "$<".o > "$<".err 2>&1 && echo 1 || echo 0) | tr '[:lower:]' '[:upper:]' | sed -e 's/#DEFINE/#define/g' -e 's|[./\\]|_|g' > "$@"
+	$(PRINT_CONFIG) mkdir -p "$$(dirname "$@")" ; echo '#define HAVE_$*_H' $$($(CC) $(CFLAGS) -c "$<" -o "$<".o > "$<".err 2>&1 && echo 1 || echo 0) | tr '[:lower:]' '[:upper:]' | sed -e 's|[^[:alnum:]]|_|g' -e 's|_DEFINE_\(.*\)_0|/* #undef \1 */|g' -e 's|_DEFINE_\(.*\)_1|#define \1 1|g' > "$@"
 $(OBJDIR)/CONFIG_HAVE_%.c: $(OBJDIR)/.mkdir
 	$(PRINT_GENERATE) mkdir -p "$$(dirname "$@")" ; echo '#include' "<$*.h>" > "$@"
+
+# C++ Standard headers, e.g. HAVE_<iostream>
+$(OBJDIR)/HAVE_<%>: $(OBJDIR)/CONFIG_HAVE_%.cpp
+	$(PRINT_CONFIG) mkdir -p "$$(dirname "$@")" ; echo '#define HAVE_$*' $$($(CXX) $(CXXFLAGS) -c "$<" -o "$<".o > "$<".err 2>&1 && echo 1 || echo 0) | tr '[:lower:]' '[:upper:]' | sed -e 's|[^[:alnum:]]|_|g' -e 's|_DEFINE_\(.*\)_0|/* #undef \1 */|g' -e 's|_DEFINE_\(.*\)_1|#define \1 1|g' > "$@"
 $(OBJDIR)/CONFIG_HAVE_%.cpp: $(OBJDIR)/.mkdir
 	$(PRINT_GENERATE) mkdir -p "$$(dirname "$@")" ; echo '#include' "<$*>" > "$@"
+
 
 .PRECIOUS: $(OBJDIR)/CONFIG_HAVE_%.c $(OBJDIR)/CONFIG_HAVE_%.cpp
 
