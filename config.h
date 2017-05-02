@@ -5,3 +5,5 @@
 /* #undef HAVE_SYS_IMPROBABLE_H */
 #define HAVE_IOSTREAM 1
 /* #undef HAVE_CLEARENV_H */
+#define HAVE_LIBM 1
+/* #undef HAVE_LIBOONY */
