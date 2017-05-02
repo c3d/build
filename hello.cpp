@@ -2,10 +2,10 @@
 #include <iostream>
 
 #if HAVE_SYS_IMPROBABLE_H
-#warning "Strange header present"
+#warning "Improbable header present, probably a fault in the build system"
 #endif
 
-#if !HAVE_IOSTREAM
+#ifndef HAVE_IOSTREAM
 #warning "We expect to have iostream"
 #endif
 
