@@ -383,6 +383,11 @@ $(OBJDIR)/HAVE_<%>: $(OBJDIR)/CONFIG_HAVE_%.cpp
 $(OBJDIR)/CONFIG_HAVE_%.cpp: $(OBJDIR)/.mkdir
 	$(PRINT_GENERATE) mkdir -p "$$(dirname "$@")" ; echo '#include' "<$*>" > "$@"
 
+# Check if a function is present
+$(OBJDIR)/HAVE_%: $(OBJDIR)/CONFIG_CHECK_%.c
+	$(PRINT_CONFIG)	$(CC_CONFIG)
+$(OBJDIR)/CONFIG_CHECK_%.c: config/check_%.c
+	$(PRINT_COPY) cp $< $@
 
 .PRECIOUS: $(OBJDIR)/CONFIG_HAVE_%.c $(OBJDIR)/CONFIG_HAVE_%.cpp
 

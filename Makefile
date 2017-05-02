@@ -34,7 +34,8 @@ CONFIG=	HAVE_<stdio.h>		\
 	HAVE_<nonexistent.h>	\
 	HAVE_<sys/time.h>	\
 	HAVE_<sys/improbable.h> \
-	HAVE_<iostream>
+	HAVE_<iostream>		\
+	HAVE_clearenv
 
 # Define what to test
 TESTS=product count-characters
