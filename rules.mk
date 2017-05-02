@@ -375,13 +375,13 @@ config.h: $(CONFIG:%=$(OBJDIR)/%)
 $(OBJDIR)/HAVE_<%.h>: $(OBJDIR)/CONFIG_HAVE_%.c
 	$(PRINT_CONFIG) $(CC_CONFIG)
 $(OBJDIR)/CONFIG_HAVE_%.c: $(OBJDIR)/.mkdir
-	$(PRINT_GENERATE) mkdir -p "$$(dirname "$@")" ; echo '#include' "<$*.h>" > "$@"
+	$(PRINT_GENERATE) mkdir -p "$$(dirname "$@")" ; echo '#include' "<$*.h>" > "$@"; echo 'int main() { return 0; }' >> "$@"
 
 # C++ Standard headers, e.g. HAVE_<iostream>
 $(OBJDIR)/HAVE_<%>: $(OBJDIR)/CONFIG_HAVE_%.cpp
 	$(PRINT_CONFIG) $(CXX_CONFIG)
 $(OBJDIR)/CONFIG_HAVE_%.cpp: $(OBJDIR)/.mkdir
-	$(PRINT_GENERATE) mkdir -p "$$(dirname "$@")" ; echo '#include' "<$*>" > "$@"
+	$(PRINT_GENERATE) mkdir -p "$$(dirname "$@")" ; echo '#include' "<$*>" > "$@"; echo 'int main() { return 0; }' >> "$@"
 
 # Check if a function is present
 $(OBJDIR)/HAVE_%: $(OBJDIR)/CONFIG_CHECK_%.c
