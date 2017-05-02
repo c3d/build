@@ -288,6 +288,7 @@ PRINT_COPY=     $(PRINT_COMMAND) $(INFO) "[COPY]" $< '=>' $@ ;
 PRINT_DEPEND= 	$(PRINT_COMMAND) $(INFO) "[DEPEND] " $< ;
 PRINT_TEST= 	$(PRINT_COMMAND) $(INFO) "[TEST]" $(@:.runtest=) ;
 PRINT_CONFIG= 	$(PRINT_COMMAND) $(INFO) "[CONFIG]" "$*" ;
+PRINT_LIBCONFIG=$(PRINT_COMMAND) $(INFO) "[CONFIG]" "lib$*" ;
 
 logs.mkdir: $(dir $(BUILD_LOG))/.mkdir $(dir $(BUILD_SAVED_LOG))/.mkdir
 %/.mkdir:
@@ -383,13 +384,17 @@ $(OBJDIR)/HAVE_<%>: $(OBJDIR)/CONFIG_HAVE_%.cpp
 $(OBJDIR)/CONFIG_HAVE_%.cpp: $(OBJDIR)/.mkdir
 	$(PRINT_GENERATE) mkdir -p "$$(dirname "$@")" ; echo '#include' "<$*>" > "$@"; echo 'int main() { return 0; }' >> "$@"
 
+# Library
+$(OBJDIR)/HAVE_lib%: $(OBJDIR)/CONFIG_LIB%.c
+	$(PRINT_LIBCONFIG) $(LIB_CONFIG)
+$(OBJDIR)/CONFIG_LIB%.c:
+	$(PRINT_GENERATE) mkdir -p "$$(dirname "$@")" ; echo 'int main() { return 0; }' > "$@"
+
 # Check if a function is present
 $(OBJDIR)/HAVE_%: $(OBJDIR)/CONFIG_CHECK_%.c
 	$(PRINT_CONFIG)	$(CC_CONFIG)
 $(OBJDIR)/CONFIG_CHECK_%.c: config/check_%.c
 	$(PRINT_COPY) cp $< $@
-
-.PRECIOUS: $(OBJDIR)/CONFIG_HAVE_%.c $(OBJDIR)/CONFIG_HAVE_%.cpp
 
 
 #------------------------------------------------------------------------------
