@@ -1,11 +1,11 @@
-#include "build-config.h"
+#include "config.h"
 #include <iostream>
 
-#if HAVE_sys_improbable_h
+#if HAVE_SYS_IMPROBABLE_H
 #warning "Strange header present"
 #endif
 
-#if !HAVE_iostream
+#if !HAVE_IOSTREAM
 #warning "We expect to have iostream"
 #endif
 
