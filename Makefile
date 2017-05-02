@@ -28,6 +28,14 @@ SOURCES=hello.cpp
 # Define the product of the build (.exe will be removed for Unix builds)
 PRODUCTS=hello.exe
 
+# Define configuration options
+CONFIG=	HAVE_<stdio.h>		\
+	HAVE_<unistd.h>		\
+	HAVE_<nonexistent.h>	\
+	HAVE_<sys/time.h>	\
+	HAVE_<sys/improbable.h> \
+	HAVE_<iostream>
+
 # Define what to test
 TESTS=product count-characters
 
@@ -39,3 +47,4 @@ include $(BUILD)rules.mk
 
 count-characters.runtest:
 	@echo Output has `$(OBJPRODUCTS) | wc -c` characters, should be 35
+
