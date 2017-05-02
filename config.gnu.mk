@@ -78,3 +78,11 @@ MAKE_EXE=       $(LD) -o $@ $(LINK_INPUTS) $(LDFLAGS) $(LDFLAGS_$*)
 CC_DEPEND=      $(CC)  $(CPPFLAGS) $(CPPFLAGS_$*) -MM -MP -MF $@ -MT $(@:.d=) $<
 CXX_DEPEND=     $(CXX) $(CPPFLAGS) $(CPPFLAGS_$*) -MM -MP -MF $@ -MT $(@:.d=) $<
 AS_DEPEND=      $(CC)  $(CPPFLAGS) $(CPPFLAGS_$*) -MM -MP -MF $@ -MT $(@:.d=) $<
+
+
+#------------------------------------------------------------------------------
+#  Configuration checks
+#------------------------------------------------------------------------------
+
+CC_CONFIG=	mkdir -p "$$(dirname "$@")" ; echo '\#define HAVE_$*_H' $$($(CC) $(CFLAGS) -c "$<" -o "$<".o > "$<".err 2>&1 && echo 1 || echo 0) | tr '[:lower:]' '[:upper:]' | sed -e 's|[^[:alnum:]]|_|g' -e 's|_DEFINE_\(.*\)_0|/* \#undef \1 */|g' -e 's|_DEFINE_\(.*\)_1|\#define \1 1|g' > "$@"
+CXX_CONFIG=	mkdir -p "$$(dirname "$@")" ; echo '\#define HAVE_$*' $$($(CXX) $(CXXFLAGS) -c "$<" -o "$<".o > "$<".err 2>&1 && echo 1 || echo 0) | tr '[:lower:]' '[:upper:]' | sed -e 's|[^[:alnum:]]|_|g' -e 's|_DEFINE_\(.*\)_0|/* \#undef \1 */|g' -e 's|_DEFINE_\(.*\)_1|\#define \1 1|g' > "$@"
