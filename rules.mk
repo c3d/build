@@ -167,7 +167,7 @@ product:$(OBJPRODUCTS)
 objects:$(OBJDIR:%=%/.mkdir) $(OBJECTS)
 
 # "Hooks" for pre and post build steps
-config: $(CONFIG:%=build-config.h)
+config: $(CONFIG:%=config.h)
 prebuild:
 postbuild:
 
@@ -368,18 +368,19 @@ endif
 #   Configuration rules
 #------------------------------------------------------------------------------
 
-build-config.h: $(CONFIG:%=$(OBJDIR)/%)
+config.h: $(CONFIG:%=$(OBJDIR)/%)
 	$(PRINT_GENERATE) cat $(CONFIG:%="$(OBJDIR)/%") > $@
 $(OBJDIR)/HAVE_<%.h>: $(OBJDIR)/CONFIG_HAVE_%.c
-	$(PRINT_CONFIG) mkdir -p "$$(dirname "$@")" ; echo '#define HAVE_$*_h' $$($(CC) -c "$<" -o "$<".o > "$<".err 2>&1 && echo 1 || echo 0) | sed -e 's|[./\\]|_|g' > "$@"
+	$(PRINT_CONFIG) mkdir -p "$$(dirname "$@")" ; echo '#define HAVE_$*_h' $$($(CC) $(CFLAGS) -c "$<" -o "$<".o > "$<".err 2>&1 && echo 1 || echo 0) | tr '[:lower:]' '[:upper:]' | sed -e 's/#DEFINE/#define/g' -e 's|[./\\]|_|g' > "$@"
 $(OBJDIR)/HAVE_<%>: $(OBJDIR)/CONFIG_HAVE_%.cpp
-	$(PRINT_CONFIG) mkdir -p "$$(dirname "$@")" ; echo '#define HAVE_$*' $$($(CXX) -c "$<" -o "$<".o > "$<".err 2>&1 && echo 1 || echo 0) | sed -e 's|[./\\]|_|g' > "$@"
+	$(PRINT_CONFIG) mkdir -p "$$(dirname "$@")" ; echo '#define HAVE_$*' $$($(CXX) $(CXXFLAGS) -c "$<" -o "$<".o > "$<".err 2>&1 && echo 1 || echo 0) | tr '[:lower:]' '[:upper:]' | sed -e 's/#DEFINE/#define/g' -e 's|[./\\]|_|g' > "$@"
 $(OBJDIR)/CONFIG_HAVE_%.c: $(OBJDIR)/.mkdir
 	$(PRINT_GENERATE) mkdir -p "$$(dirname "$@")" ; echo '#include' "<$*.h>" > "$@"
 $(OBJDIR)/CONFIG_HAVE_%.cpp: $(OBJDIR)/.mkdir
 	$(PRINT_GENERATE) mkdir -p "$$(dirname "$@")" ; echo '#include' "<$*>" > "$@"
 
-.PRECIOUS: $(OBJDIR)/CONFIG_HAVE_%.c
+.PRECIOUS: $(OBJDIR)/CONFIG_HAVE_%.c $(OBJDIR)/CONFIG_HAVE_%.cpp
+
 
 #------------------------------------------------------------------------------
 #  Makefile optimization tricks
