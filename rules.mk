@@ -119,7 +119,7 @@ install: hello.install                          \
         $(DLL_INSTALL:%=%.install_dll)
 
 clean: hello.clean
-	-$(PRINT_COMMAND) rm -f $(GARBAGE) $(TOCLEAN) $(OBJECTS) $(DEPENDENCIES) $(OBJPRODUCTS)
+	-$(PRINT_COMMAND) rm -f $(GARBAGE) $(TOCLEAN) $(OBJECTS) $(DEPENDENCIES) $(OBJPRODUCTS) config.h
 
 distclean: nuke clean
 nuke:
@@ -382,8 +382,6 @@ $(OBJDIR)/HAVE_<%>: $(OBJDIR)/CONFIG_HAVE_%.cpp
 	$(PRINT_CONFIG) mkdir -p "$$(dirname "$@")" ; echo '#define HAVE_$*' $$($(CXX) $(CXXFLAGS) -c "$<" -o "$<".o > "$<".err 2>&1 && echo 1 || echo 0) | tr '[:lower:]' '[:upper:]' | sed -e 's|[^[:alnum:]]|_|g' -e 's|_DEFINE_\(.*\)_0|/* #undef \1 */|g' -e 's|_DEFINE_\(.*\)_1|#define \1 1|g' > "$@"
 $(OBJDIR)/CONFIG_HAVE_%.cpp: $(OBJDIR)/.mkdir
 	$(PRINT_GENERATE) mkdir -p "$$(dirname "$@")" ; echo '#include' "<$*>" > "$@"
-
-
 .PRECIOUS: $(OBJDIR)/CONFIG_HAVE_%.c $(OBJDIR)/CONFIG_HAVE_%.cpp
 
 
