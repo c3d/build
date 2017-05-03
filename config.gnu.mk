@@ -87,6 +87,6 @@ AS_DEPEND=      $(CC)  $(CPPFLAGS) $(CPPFLAGS_$*) -MM -MP -MF $@ -MT $(@:.d=) $<
 CONFIG_UPPER=$(shell echo -n "$*" | tr '[:lower:]' '[:upper:]' | tr -c '[:alnum:]' '_')
 CONFIG_FLAGS=$(shell grep '// [A-Z]*FLAGS=' "$<" | sed -e 's|// [A-Z]*FLAGS=||g')
 
-CC_CONFIG=	mkdir -p "$$(dirname "$@")" ; echo '\#define' HAVE_$(CONFIG_UPPER)_H $(shell $(CC) $(CFLAGS) $(CFLAGS_CONFIG_$*) $(CONFIG_FLAGS) "$<" -o "$<".exe > "$<".err 2>&1 && "$<".exe > "$<".out 2>&1 && echo 1 || echo 0) | sed -e 's|\#define \(.*\) 0|/* \#undef \1 */|g' > "$@"
-CXX_CONFIG=	mkdir -p "$$(dirname "$@")" ; echo '\#define' HAVE_$(CONFIG_UPPER) $(shell $(CXX) $(CXXFLAGS) $(CXXFLAGS_CONFIG_$*) $(CONFIG_FLAGS) "$<" -o "$<".exe > "$<".err 2>&1 && "$<".exe > "$<".out 2>&1 && echo 1 || echo 0) | sed -e 's|\#define \(.*\) 0|/* \#undef \1 */|g' > "$@"
+CC_CONFIG=	mkdir -p "$$(dirname "$@")" ; echo '\#define' HAVE_$(CONFIG_UPPER)_H $(shell $(CC) $(CFLAGS) $(CFLAGS_CONFIG_$*) $(CONFIG_FLAGS) "$<" -o "$<".exe > "$<".err 2>&1 && "$<".exe > "$<".out && echo 1 || echo 0) | sed -e 's|\#define \(.*\) 0|/* \#undef \1 */|g' > "$@"; [ -f "$<".out ] && cat >> "$@" "$<".out; true
+CXX_CONFIG=	mkdir -p "$$(dirname "$@")" ; echo '\#define' HAVE_$(CONFIG_UPPER) $(shell $(CXX) $(CXXFLAGS) $(CXXFLAGS_CONFIG_$*) $(CONFIG_FLAGS) "$<" -o "$<".exe > "$<".err 2>&1 && "$<".exe > "$<".out && echo 1 || echo 0) | sed -e 's|\#define \(.*\) 0|/* \#undef \1 */|g' > "$@"; [ -f "$<".out ] && cat >> "$@" "$<".out; true
 LIB_CONFIG=	mkdir -p "$$(dirname "$@")" ; echo '\#define HAVE_LIB'$(CONFIG_UPPER) $$($(CC) $(CCFLAGS) $(CFLAGS_CONFIG_$*) -l$* "$<" -o "$<".exe > "$<".err 2>&1 && "$<".exe && echo 1 || echo 0) | sed -e 's|\#define \(.*\) 0|/* \#undef \1 */|g' > "$@"
