@@ -37,7 +37,8 @@ CONFIG=	HAVE_<stdio.h>		\
 	HAVE_<iostream>		\
 	HAVE_clearenv		\
 	HAVE_libm		\
-	HAVE_liboony
+	HAVE_liboony		\
+	HAVE_sbrk
 
 # Define what to test
 TESTS=product count-characters

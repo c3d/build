@@ -7,3 +7,4 @@
 /* #undef HAVE_CLEARENV_H */
 #define HAVE_LIBM 1
 /* #undef HAVE_LIBOONY */
+#define HAVE_SBRK_H 1
