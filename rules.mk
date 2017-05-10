@@ -392,8 +392,8 @@ $(OBJDIR)/CONFIG_LIB%.c:
 
 # Check if a function is present
 $(OBJDIR)/HAVE_%: $(OBJDIR)/CONFIG_CHECK_%.c
-	$(PRINT_CONFIG)	$(CC_CONFIG)
-$(OBJDIR)/CONFIG_CHECK_%.c: config/check_%.c
+	$(PRINT_CONFIG)	$(FN_CONFIG)
+$(OBJDIR)/CONFIG_CHECK_%.c: $(BUILD)config/check_%.c
 	$(PRINT_COPY) cp $< $@
 
 
