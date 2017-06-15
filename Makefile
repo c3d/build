@@ -1,5 +1,5 @@
 #******************************************************************************
-# Makefile<build>                                             'build' project 
+# Makefile<build>                                             'build' project
 #******************************************************************************
 #
 #  File Description:
@@ -49,6 +49,5 @@ BENCHMARKS=product
 # Include the makefile rules
 include $(BUILD)rules.mk
 
-count-characters.runtest:
+count-characters.test:
 	@echo Output has `$(OBJPRODUCTS) | wc -c` characters, should be 35
-

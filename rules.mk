@@ -1,5 +1,5 @@
 #******************************************************************************
-# rules.mk                                                    Recorder project 
+# rules.mk                                                    Recorder project
 #******************************************************************************
 #
 #  File Description:
@@ -104,7 +104,7 @@ debug opt release profile: logs.mkdir
 
 # Testing
 test tests check: $(TARGET)
-	$(PRINT_COMMAND) $(MAKE) RECURSE=test $(TESTS:%=%.runtest) LOG_COMMANDS= TIME=
+	$(PRINT_COMMAND) $(MAKE) RECURSE=test $(TESTS:%=%.test) LOG_COMMANDS= TIME=
 
 # Clean builds
 startup restart rebuild: clean all
@@ -172,14 +172,14 @@ prebuild:
 postbuild:
 
 # Run the test (in the object directory)
-product.runtest: product .ALWAYS
+product.test: product .ALWAYS
 	$(PRINT_TEST) $(OBJROOT_EXE) $(PRODUCTS_OPTS)
 
 # Run a test from a C or C++ file to link against current library
-%.c.runtest: $(OBJROOT_LIB) .ALWAYS
+%.c.test: $(OBJROOT_LIB) .ALWAYS
 	$(PRINT_BUILD) $(MAKE) SOURCES=$*.c LINK_LIBS=$(OBJROOT_LIB) PRODUCTS=$*.exe $(TARGET)
 	$(PRINT_TEST) $(TEST_CMD_$*) $(OBJROOT)/$*$(EXE_EXT) $(TEST_ARGS_$*)
-%.cpp.runtest: $(OBJROOT_LIB) .ALWAYS
+%.cpp.test: $(OBJROOT_LIB) .ALWAYS
 	$(PRINT_BUILD) $(MAKE) SOURCES=$*.cpp LINK_LIBS=$(OBJROOT_LIB) PRODUCTS=$*.exe $(TARGET)
 	$(PRINT_TEST) $(TEST_CMD_$*) $(OBJROOT)/$*$(EXE_EXT) $(TEST_ARGS_$*)
 
@@ -194,7 +194,7 @@ product.runtest: product .ALWAYS
 # Benchmarking (always done with profile target)
 benchmark:	$(BENCHMARK:%=%.benchmark) $(BENCHMARKS:%=%.benchmark)
 product.benchmark: product .ALWAYS
-	$(PRINT_TEST) gprof 
+	$(PRINT_TEST) gprof
 
 .PHONY: hello hello.install hello.clean goodbye
 .PHONY: build libraries product objects prebuild postbuild test
@@ -260,7 +260,7 @@ endif
 # If LIBRARIES=foo/bar, go to directory foo/bar, which should build bar.a
 $(OBJROOT)/%$(LIB_EXT): $(DEEP_BUILD)
 	+$(PRINT_COMMAND) cd $(filter %$*, $(LIBRARIES) $(SUBDIRS)) && $(RECURSE_CMD)
-%/.runtest:
+%/.test:
 	+$(PRINT_TEST) cd $* && $(MAKE) TARGET=$(TARGET) test
 deep_build:
 
@@ -286,7 +286,7 @@ PRINT_GENERATE= $(PRINT_COMMAND) $(INFO) "[GENERATE]" "$(shell basename "$@")";
 PRINT_INSTALL=  $(PRINT_COMMAND) $(INFO) "[INSTALL] " $(*F) in $(<D);
 PRINT_COPY=     $(PRINT_COMMAND) $(INFO) "[COPY]" $< '=>' $@ ;
 PRINT_DEPEND= 	$(PRINT_COMMAND) $(INFO) "[DEPEND] " $< ;
-PRINT_TEST= 	$(PRINT_COMMAND) $(INFO) "[TEST]" $(@:.runtest=) ;
+PRINT_TEST= 	$(PRINT_COMMAND) $(INFO) "[TEST]" $(@:.test=) ;
 PRINT_CONFIG= 	$(PRINT_COMMAND) $(INFO) "[CONFIG]" "$*" ;
 PRINT_LIBCONFIG=$(PRINT_COMMAND) $(INFO) "[CONFIG]" "lib$*" ;
 
