@@ -69,7 +69,7 @@ you should see if you do that in the `build` directory itself:
     real    0m3.263s
     user    0m0.456s
     sys     0m0.133s
-    
+
 The output of the build will be located by default in `build/objects`.
 There are subdirectories corresponding to the build environment and
 the build target, so the final product could be for instance under
@@ -107,8 +107,8 @@ building it if necessary:
      Output has 35 characters, should be 35
 
 As you can see in the sample `Makefile`, it is easy to add tests,
-simply by adding a rule that ends in `.runtest`. In the sample file,
-it is called `count-characters.runtest`.
+simply by adding a rule that ends in `.test`. In the sample file,
+it is called `count-characters.test`.
 
 
 ## Building for debugging, release or profiling
@@ -132,7 +132,7 @@ This list is likely to evolve over time, most notably with support for
 Valgrind and other debug / analysis tools.
 
 
-## Installing the product 
+## Installing the product
 
 To install the product, use `make install`. This often requires
 super-user privileges.
@@ -189,7 +189,7 @@ Some of the most useful include:
 * `PREFIX` specifies the installation location. You can also specify
   the installation location for executables (`PREFIX_BIN`), libraries
   (`PREFIX_LIB`) or shared libraries (`PREFIX_DLL`).
-  
+
 
 ## Hierarchical projects
 
@@ -198,10 +198,10 @@ Often, a project is made of several directories or libraries. In
 
 * `SUBDIRS` lists subdirectories of the top-level directory that
   must be built every time.
-  
+
 * `LIBRARIES` lists libraries, which can be subdirectories or not,
   which the products depends on.
-  
+
 Subdirectories are re-built everytime a top-level build is started,
 whereas libraries are re-built only if they are missing. It is
 possible to force a re-build of libraries using the `d-` or `deep-`
