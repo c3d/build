@@ -64,16 +64,43 @@ If you simply type `make`, a default build is launched. This is what
 you should see if you do that in the `build` directory itself:
 
     build> make
+
+    ****************************************************************
+    * The BUILDENV environment variable is not set
+    * You will accelerate builds by setting it as appropriate for
+    * your system. The best guess is BUILDENV=macosx-clang
+    * Attempting to build opt with macosx-clang DIR=/build
+    ****************************************************************
+
     [BEGIN]              opt macosx-clang in [top]/build
-    [DEPEND]             hello.cpp
-    [BEGIN]              opt macosx-clang in [top]/build
+    [GENERATE]           CONFIG_HAVE_stdio.c
+    [CONFIG]             stdio
+    [GENERATE]           CONFIG_HAVE_unistd.c
+    [CONFIG]             unistd
+    [GENERATE]           CONFIG_HAVE_nonexistent.c
+    [CONFIG]             nonexistent
+    [GENERATE]           CONFIG_HAVE_sys.sl.time.c
+    [CONFIG]             sys.sl.time
+    [GENERATE]           CONFIG_HAVE_sys.sl.improbable.c
+    [CONFIG]             sys.sl.improbable
+    [GENERATE]           CONFIG_HAVE_iostream.cpp
+    [CONFIG]             iostream
+    [COPY]               config/check_clearenv.c => objects/macosx-clang/opt/build/CONFIG_CHECK_clearenv.c
+    [CONFIG]             clearenv
+    [GENERATE]           CONFIG_LIBm.c
+    [CONFIG]             libm
+    [GENERATE]           CONFIG_LIBoony.c
+    [CONFIG]             liboony
+    [COPY]               config/check_sbrk.c => objects/macosx-clang/opt/build/CONFIG_CHECK_sbrk.c
+    [CONFIG]             sbrk
+    [GENERATE]           config.h
     [COMPILE  1/1]       hello.cpp
     [BUILD]              hello
-    0 Errors, 0 Warnings in ./logs/build-macosx-clang-opt-20170325-144013.log
+    [END]                opt macosx-clang in [top]/build
 
-    real    0m3.263s
-    user    0m0.456s
-    sys     0m0.133s
+    real	0m2.243s
+    user	0m1.206s
+    sys	0m0.750s
 
 The output of the build will be located by default in `build/objects`.
 There are subdirectories corresponding to the build environment and
@@ -188,7 +215,7 @@ Some of the most useful include:
 
 * `TARGET` specifies the default build target, which can be `opt`,
   `debug`, `release` or `profile` at the moment. If you often build
-  debug targets, you only need to `export BUILDENV=debug`, and
+  debug targets, you only need to `export TARGET=debug`, and
   the default `make` will become equivalent to `make debug`.
 
 * `PREFIX` specifies the installation location. You can also specify
