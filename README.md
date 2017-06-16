@@ -9,10 +9,13 @@ through the complexity of tools such as `automake` or `cmake`. It is
 well suited for relatively small programs, although it has been used
 for at least one much larger program.
 
+* Very short and readable makefiles offering all the most useful features
 * Compact size (about 500 lines of active makefile code for a typical build)
 * Fast, since short makefiles with few rules are quickly parsed
-* Automatic generation of header-file dependencies
+* Automatic, incremental project configuration, generating a `config.h` file
 * Automatic logging of detailed build commands in log files
+* Product testing with `make test`
+* Product installation with `make install`
 * Compact, colorized progress report
 * Summary of errors and warnings at end of build
 * Colorization of error and warning messages
@@ -20,10 +23,12 @@ for at least one much larger program.
 * Rule modifiers for common build options, e.g. `v-debug` for verbose debug
 * Personal preferences easily defined with environment variables
 * Built-in help (`make help`)
-* Pure `make`, allowing you to use standard `Makefile` syntax and features
+* Pure `make`, allowing you to use all standard `Makefile` syntax and features
+* Automatic, single-pass generation of header-file dependencies
 * Supports parallel builds
 * Supports separate libraries, to accelerate builds (libraries are
   only built the first time, unless you request a "deep" build)
+* Portable (tested on Linux, macOS and Windows platforms)
 
 
 ## Using build
@@ -206,3 +211,69 @@ Subdirectories are re-built everytime a top-level build is started,
 whereas libraries are re-built only if they are missing. It is
 possible to force a re-build of libraries using the `d-` or `deep-`
 prefix for builds, for example `make deep-debug`.
+
+
+## Project configuration
+
+Often, projects have dependencies on specific features that are only
+available on some platorms or after installing specific
+dependencies. Historically, tools such as `autoconf` and `automake`
+have addressed this problem.
+
+In `build`, you specify the configuration dependencies using the
+`CONFIG` variable, which will define the various conditions you want
+to test for. The result of the tests will be stored in a `config.h`
+header file.
+
+Here is an example from the sample `Makefile`:
+
+    CONFIG= HAVE_<stdio.h>                  \
+            HAVE_<unistd.h>                 \
+            HAVE_<nonexistent.h>            \
+            HAVE_<sys/time.h>               \
+            HAVE_<sys/improbable.h>         \
+            HAVE_<iostream>                 \
+            HAVE_clearenv                   \
+            HAVE_libm                       \
+            HAVE_liboony                    \
+            HAVE_sbrk
+
+Here is what the generated `config.h` might look like:
+
+    #define HAVE_STDIO_H 1
+    #define HAVE_UNISTD_H 1
+    /* #undef HAVE_NONEXISTENT_H */
+    #define HAVE_SYS_TIME_H 1
+    /* #undef HAVE_SYS_IMPROBABLE_H */
+    #define HAVE_IOSTREAM 1
+    /* #undef HAVE_CLEARENV */
+    #define HAVE_LIBM 1
+    /* #undef HAVE_LIBOONY */
+    #define HAVE_SBRK 1
+    #define CONFIG_SBRK_BASE ((void *) 0x104ab3000)
+
+The following configuration options are recognized:
+
+* C header files, such as `<stdio.h>`
+* C++ header files, such as `<iostream>`
+* Function names, such as `clearenv` or `sbrk`
+* Library names, such as `libm`
+
+For function names, a source file in the `config/` subdirectory will
+specify how you test for the given function, and possibly return
+additional output that will be integrated in the `config.h` file. For
+example, the `config/check_sbrk.c` file contains the following:
+
+    #include <unistd.h>
+    #include <stdio.h>
+
+    int main()
+    {
+        printf("#define CONFIG_SBRK_BASE ((void *) %p)\n", sbrk(0));
+        return 0;
+    }
+
+Note that the example adds a `#define CONFIG_SBRK_BASE` in the
+`config.h`. This is only for illustration purpose, since modern
+systems attempt to randomize address space, making the value
+returned by `sbrk(0)` different with each run.
