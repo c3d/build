@@ -254,16 +254,16 @@ header file.
 
 Here is an example from the sample `Makefile`:
 
-    CONFIG= HAVE_<stdio.h>                  \
-            HAVE_<unistd.h>                 \
-            HAVE_<nonexistent.h>            \
-            HAVE_<sys/time.h>               \
-            HAVE_<sys/improbable.h>         \
-            HAVE_<iostream>                 \
-            HAVE_clearenv                   \
-            HAVE_libm                       \
-            HAVE_liboony                    \
-            HAVE_sbrk
+    CONFIG= <stdio.h>                  \
+            <unistd.h>                 \
+            <nonexistent.h>            \
+            <sys/time.h>               \
+            <sys/improbable.h>         \
+            <iostream>                 \
+            clearenv                   \
+            libm                       \
+            liboony                    \
+            sbrk
 
 Here is what the generated `config.h` might look like:
 

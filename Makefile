@@ -29,16 +29,16 @@ SOURCES=hello.cpp
 PRODUCTS=hello.exe
 
 # Define configuration options
-CONFIG=	HAVE_<stdio.h>		\
-	HAVE_<unistd.h>		\
-	HAVE_<nonexistent.h>	\
-	HAVE_<sys/time.h>	\
-	HAVE_<sys/improbable.h> \
-	HAVE_<iostream>		\
-	HAVE_clearenv		\
-	HAVE_libm		\
-	HAVE_liboony		\
-	HAVE_sbrk
+CONFIG=	<stdio.h>		\
+	<unistd.h>		\
+	<nonexistent.h>		\
+	<sys/time.h>		\
+	<sys/improbable.h> 	\
+	<iostream>		\
+	clearenv		\
+	libm			\
+	liboony			\
+	sbrk
 
 # Define what to test
 TESTS=product count-characters

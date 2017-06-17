@@ -372,7 +372,7 @@ endif
 NORM_CONFIG=$(subst <,.lt.,$(subst >,.gt.,$(subst /,.sl.,$(CONFIG))))
 ORIG_TARGET=$(subst .lt.,<,$(subst .gt.,>,$(subst .sl.,/,$*)))
 
-config.h: $(NORM_CONFIG:%=$(OBJDIR)/%)
+config.h: $(NORM_CONFIG:%=$(OBJDIR)/HAVE_%)
 	$(PRINT_GENERATE) cat $^ > $@
 
 # C standard headers, e.g. HAVE_<stdio.h>
@@ -380,24 +380,28 @@ $(OBJDIR)/HAVE_.lt.%.h.gt.: $(OBJDIR)/CONFIG_HAVE_%.c
 	$(PRINT_CONFIG) $(CC_CONFIG)
 $(OBJDIR)/CONFIG_HAVE_%.c: $(OBJDIR)/.mkdir
 	$(PRINT_GENERATE) echo '#include' "<$(ORIG_TARGET).h>" > "$@"; echo 'int main() { return 0; }' >> "$@"
+.PRECIOUS: $(OBJDIR)/CONFIG_HAVE_%.c
 
 # C++ Standard headers, e.g. HAVE_<iostream>
 $(OBJDIR)/HAVE_.lt.%.gt.: $(OBJDIR)/CONFIG_HAVE_%.cpp
 	$(PRINT_CONFIG) $(CXX_CONFIG)
 $(OBJDIR)/CONFIG_HAVE_%.cpp: $(OBJDIR)/.mkdir
 	$(PRINT_GENERATE) echo '#include' "<$(ORIG_TARGET)>" > "$@"; echo 'int main() { return 0; }' >> "$@"
+.PRECIOUS: $(OBJDIR)/CONFIG_HAVE_%.cpp
 
 # Library
 $(OBJDIR)/HAVE_lib%: $(OBJDIR)/CONFIG_LIB%.c
 	$(PRINT_LIBCONFIG) $(LIB_CONFIG)
 $(OBJDIR)/CONFIG_LIB%.c: $(OBJDIR)/.mkdir
 	$(PRINT_GENERATE) echo 'int main() { return 0; }' > "$@"
+.PRECIOUS: $(OBJDIR)/CONFIG_LIB%.c
 
 # Check if a function is present
 $(OBJDIR)/HAVE_%: $(OBJDIR)/CONFIG_CHECK_%.c
 	$(PRINT_CONFIG)	$(FN_CONFIG)
 $(OBJDIR)/CONFIG_CHECK_%.c: $(BUILD)config/check_%.c $(OBJDIR)/.mkdir
 	$(PRINT_COPY) cp $< $@
+.PRECIOUS: $(OBJDIR)/CONFIG_CHECK_%.c
 
 
 #------------------------------------------------------------------------------
