@@ -304,3 +304,28 @@ Note that the example adds a `#define CONFIG_SBRK_BASE` in the
 `config.h`. This is only for illustration purpose, since modern
 systems attempt to randomize address space, making the value
 returned by `sbrk(0)` different with each run.
+
+
+## Redistribution
+
+The 'build' project is released under the GNU General Public License
+version 3. The project author's reading of said license is that it only
+"contaminates" derivative products, but not products created *using* the
+product. In other words:
+
+* Creating derivative software, e.g. a 'nanotoconf' project that uses
+  'build' code, requires you to comply with the GPL, and in particular
+  to redistribute your code in source form. The fact that it's really
+  hard to distribute makefiles in binary form should help you comply
+  with this anyway :-)
+
+* Building software using 'build' does not make that software GPL, any
+  more than building it using GCC or GNU Make. I believe that 'build'
+  can legally be used for proprietary software or for software using
+  any other open-source license.
+
+As long as I (Christophe de Dinechin) am the sole author / maintainer
+of this software, this interpretation will prevail. If you believe
+that I am in error in my understanding of the GPL v3, please send me
+e-mail or raise an issue on GitHub or GitLab, and I will add a
+licensing exception to that effect.
