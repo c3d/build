@@ -22,13 +22,13 @@
 #  Tools
 #------------------------------------------------------------------------------
 
-CC=             gcc
-CXX=            g++
+CC=             $(CROSS_COMPILE:%=%-)gcc
+CXX=            $(CROSS_COMPILE:%=%-)g++
 LD=             $(CXX)
 CPP=            $(CC) -E
 PYTHON=         python
-AR=             ar -rcs
-RANLIB=         ranlib
+AR=             $(CROSS_COMPILE:%=%-)ar -rcs
+RANLIB=         $(CROSS_COMPILE:%=%-)ranlib
 LIBTOOL=        libtool -no_warning_for_no_symbols
 INSTALL=	install
 

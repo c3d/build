@@ -45,8 +45,8 @@ DIR:=           $(subst $(BASEDIR),,$(FULLDIR))
 PRETTY_DIR:=    $(subst $(BASEDIR),[top],$(FULLDIR))
 BASENAME_DIR:=  $(shell basename $(FULLDIR))
 BUILD_DATE:=    $(shell /bin/date '+%Y%m%d-%H%M%S')
-OBJROOT:=       $(BUILDOBJ)/$(BUILDENV)/$(TARGET)$(BASE_EXTRA_DEPTH)
-BUILD_LOG:=     $(BUILD_LOGS)build-$(BUILDENV)-$(TARGET)-$(BUILD_DATE).log
+OBJROOT:=       $(BUILDOBJ)/$(BUILDENV)/$(CROSS_COMPILE:%=%-)$(TARGET)$(BASE_EXTRA_DEPTH)
+BUILD_LOG:=     $(BUILD_LOGS)build-$(BUILDENV)-$(CROSS_COMPILE:%=%-)$(TARGET)-$(BUILD_DATE).log
 endif
 
 # Configuration variables
