@@ -23,10 +23,8 @@
 #------------------------------------------------------------------------------
 
 CC=             gcc
-CC99=           $(CC) -std=gnu99
 CXX=            g++
-CXX11=          $(CXX) -std=gnu++11
-LD=             $(CC)
+LD=             $(CXX)
 CPP=            $(CC) -E
 PYTHON=         python
 AR=             ar -rcs
@@ -38,6 +36,9 @@ INSTALL=	install
 #------------------------------------------------------------------------------
 #  Compilation flags
 #------------------------------------------------------------------------------
+
+CFLAGS_STD=$(CC_STD:%=-std=%)
+CXXFLAGS_STD=$(CXX_STD:%=-std=%)
 
 CFLAGS_debug=   -g -Wall -fno-inline
 CFLAGS_opt=     -g -O3 -Wall
