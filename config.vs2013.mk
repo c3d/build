@@ -1,5 +1,5 @@
 #******************************************************************************
-# config.vs2013.mk                                            Recorder project 
+# config.vs2013.mk                                            Recorder project
 #******************************************************************************
 #
 #  File Description:
@@ -27,9 +27,7 @@
 # -TC: C mode
 # -TP: C++ mode
 CC=    cl -nologo -TC
-CC99=  cl -nologo -TC
 CXX=   cl -nologo -TP -EHsc
-CXX11= cl -nologo -TP -EHsc
 CPP=   cl -nologo -E
 LD=    link -nologo
 MSLIB= lib -nologo

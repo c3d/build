@@ -58,6 +58,14 @@ PREFIX_DLL?=$(PREFIX_LIB)
 #   Compilation flags
 #------------------------------------------------------------------------------
 
+# Standard specification (use GCC standard names)
+# For a compiler that is not GCC compatible, please state options corresponding
+# to the relevant GNU option names as follows:
+#   CCFLAGS_STD=$(CC_FLAGS_STD_$(CC_STD))
+#   CCFLAGS_STD_gnu11=[whatever option is needed here]
+CC_STD=gnu11
+CXX_STD=gnu++14
+
 # Compilation flags
 DEFINES_debug=      DEBUG
 DEFINES_opt=        DEBUG OPTIMIZED
@@ -68,11 +76,6 @@ CXXFLAGS_debug=     $(CFLAGS_debug)
 CXXFLAGS_opt=       $(CFLAGS_opt)
 CXXFLAGS_release=   $(CFLAGS_release)
 CXXFLAGS_extra=     $(CFLAGS_extra)
-
-# We want to use C++11 for variadic templates
-# (Replacing old, unsafe printf-style variadics with C++ objects)
-CXX=$(CXX11)
-CC=$(CC99)
 
 
 #------------------------------------------------------------------------------
