@@ -23,11 +23,11 @@
 #------------------------------------------------------------------------------
 
 CC=             gcc
-CC99=           gcc -std=gnu99
+CC99=           $(CC) -std=gnu99
 CXX=            g++
-CXX11=          g++ -std=gnu++11
-LD=             g++
-CPP=            gcc -E
+CXX11=          $(CXX) -std=gnu++11
+LD=             $(CC)
+CPP=            $(CC) -E
 PYTHON=         python
 AR=             ar -rcs
 RANLIB=         ranlib
