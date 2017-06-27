@@ -58,6 +58,23 @@ submodule in your project using:
 
 In order to get a summary of the available build targets, use `make help`.
 
+
+## Building libraries and shared libraries
+
+The kind of output your makefile produces depends on the extension in
+`PRODUCTS`. You can use:
+
+* `.exe` for an executable binary
+* `.lib` for a static library
+* `.dll` for a dynamic library
+
+The build commands for each case are defined in build environment
+configurations, e.g. `config.gnu.mk`, by variables called `MAKE_EXE`,
+`MAKE_LIB` and `MAKE_DLL`. The actual extension being used are also
+defined in the same file, as `EXE_EXT`, `LIB_EXT` and `DLL_EXT`. For
+example, on Linux, `LIB_EXT` is set to `.a`.
+
+
 ## Building the products
 
 If you simply type `make`, a default build is launched. This is what
@@ -197,7 +214,6 @@ default target. If you want to clean debug objects, use `make debug-clean`.
 Similarly, you can do a release install with `make release-install`.
 
 (Note that you can make `debug` your default target, see below).
-
 
 
 ## Environment variables
