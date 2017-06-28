@@ -32,14 +32,10 @@ for at least one much larger program.
 
 You can find examples of how I use 'build' in some of my other projects:
 
-* Flight recorder:
-  https://github.com/c3d/recorder/blob/master/Makefile
-* XL programming language:
-  https://github.com/c3d/XL-programming-language/blob/master/xlr/Makefile
-* ELFE programming language:
-  https://github.com/c3d/elfe/blob/master/src/Makefile
-* XL reboot:
-  https://github.com/c3d/xl/blob/master/Makefile
+* [Flight recorder](https://github.com/c3d/recorder/blob/master/Makefile)
+* [XL programming language](https://github.com/c3d/XL-programming-language/blob/master/xlr/Makefile)
+* [ELFE programming language](https://github.com/c3d/elfe/blob/master/src/Makefile)
+* [XL reboot](https://github.com/c3d/xl/blob/master/Makefile)
 
 ## Using build
 
