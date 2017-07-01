@@ -25,6 +25,9 @@ BUILD=./
 # Define the source code
 SOURCES=hello.cpp
 
+# Define libraries we use in that project
+LIBRARIES=lib1 lib2
+
 # Define the product of the build (.exe will be removed for Unix builds)
 PRODUCTS=hello.exe
 
