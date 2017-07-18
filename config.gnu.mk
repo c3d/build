@@ -24,7 +24,11 @@
 
 CC=             $(CROSS_COMPILE:%=%-)gcc
 CXX=            $(CROSS_COMPILE:%=%-)g++
+ifeq ($(filter %.cpp,$(SOURCES)),)
+LD=		$(CC)
+else
 LD=             $(CXX)
+endif
 CPP=            $(CC) -E
 PYTHON=         python
 AR=             $(CROSS_COMPILE:%=%-)ar -rcs
