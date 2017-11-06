@@ -125,8 +125,7 @@ install-internal:				\
         $(EXE_INSTALL:%=%.install_exe)          \
         $(LIB_INSTALL:%=%.install_lib)          \
         $(DLL_INSTALL:%=%.install_dll)		\
-	$(OBJLIBS:%=%.install_lib)		\
-	$(OBJDLLS:%=%.install_dll)
+	$(HDR_INSTALL:%=%.install_hdr)
 
 clean: hello.clean
 	-$(PRINT_COMMAND) rm -f $(GARBAGE) $(TOCLEAN) $(OBJECTS) $(DEPENDENCIES) $(OBJPRODUCTS) config.h
@@ -207,8 +206,8 @@ product.test: product .ALWAYS
 	$(PRINT_INSTALL) $(INSTALL) $* $(PREFIX_LIB)
 %.install_dll: $(PREFIX_DLL).mkdir build
 	$(PRINT_INSTALL) $(INSTALL) $* $(PREFIX_DLL)
-$(PREFIX)%.mkdir:
-	$(PRINT_COMMAND) mkdir -p $(PREFIX)$*
+%.install_hdr: $(PREFIX_HDR).mkdir
+	$(PRINT_INSTALL) $(INSTALL) $* $(PREFIX_HDR)
 
 # Benchmarking (always done with profile target)
 benchmark:	$(BENCHMARK:%=%.benchmark) $(BENCHMARKS:%=%.benchmark)
