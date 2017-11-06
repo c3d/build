@@ -68,8 +68,10 @@ OBJPRODUCTS:=   $(OBJROOT_EXE) $(OBJROOT_LIB) $(OBJROOT_DLL) $(OBJROOT_OTHER)
 # This is to help executable build rules be more robust and not catch
 # unknown extensions by mistake. The extension is replaced with the
 # correct platform extension, i.e. .a for static libraries on Linux
+ifneq ($(PRODUCTS),)
 ifeq ($(PRODUCTS_EXE)$(PRODUCTS_LIB)$(PRODUCTS_DLL),)
 $(error Error: Variable PRODUCTS must end in .exe, .lib or .dll)
+endif
 endif
 
 LIBNAMES:=      $(notdir $(LIBRARIES))
