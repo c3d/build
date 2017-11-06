@@ -81,10 +81,7 @@ endif
 PRINT_DIR=              --no-print-directory
 RECURSE_BUILDENV=$(BUILDENV)
 RECURSE_CMD=    $(MAKE) $(PRINT_DIR) TARGET=$(TARGET) BUILDENV=$(RECURSE_BUILDENV) $(RECURSE) COLORIZE=
-MAKEFILE_DEPS:= Makefile                             \
-                $(BUILD)rules.mk                     \
-                $(BUILD)config.mk                    \
-                $(BUILD)config.$(BUILDENV).mk
+MAKEFILE_DEPS:= $(MAKEFILE_LIST)
 NOT_PARALLEL?=  .NOTPARALLEL
 BUILD_LOW?=     0
 BUILD_HIGH?=    100
