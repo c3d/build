@@ -243,6 +243,8 @@ Some of the most useful include:
 * `PREFIX` specifies the installation location. You can also specify
   the installation location for executables (`PREFIX_BIN`), libraries
   (`PREFIX_LIB`) or shared libraries (`PREFIX_DLL`).
+  For compatibility with `automake`-generated makefiles, you can also
+  execute a staged install by setting `DESTDIR` when running `make`.
 
 
 ## Hierarchical projects

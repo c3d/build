@@ -48,7 +48,7 @@ GARBAGE=        *~ *.bak
 #   Installation paths
 #------------------------------------------------------------------------------
 
-PREFIX?=/usr/local/
+PREFIX?=$(DESTDIR)/usr/local/
 PREFIX_BIN?=$(PREFIX)bin/
 PREFIX_LIB?=$(PREFIX)lib/
 PREFIX_DLL?=$(PREFIX_LIB)
