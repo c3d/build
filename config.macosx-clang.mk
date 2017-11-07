@@ -31,6 +31,5 @@ DLL_EXT=	.dylib
 MAKE_LIB=	$(LIBTOOL) -static	$(LDFLAGS) $(LDFLAGS_$*)  	$(LINK_INPUTS)	-o $@
 MAKE_DLL=	$(LD)      -shared	$(LDFLAGS) $(LDFLAGS_$*)  	$(LINK_INPUTS)	-o $@
 
-
 # On MacOSX, we will use basic frameworks e.g. for string and filesystem functions
 LDFLAGS_macosx-clang=	-framework CoreFoundation -framework CoreServices
