@@ -25,10 +25,9 @@ include $(BUILD)config.mk
 XINCLUDES=  $(INCLUDES) $(INCLUDES_$(BUILDENV)) $(INCLUDES_$(TARGET))       $(INCLUDES_EXTRA)
 XDEFINES=   $(DEFINES)  $(DEFINES_$(BUILDENV))  $(DEFINES_$(TARGET))        $(DEFINES_EXTRA)
 CPPFLAGS+=              $(CPPFLAGS_$(BUILDENV)) $(CPPFLAGS_$(TARGET))       $(CPPFLAGS_EXTRA)                   $(XDEFINES:%=-D%) $(XINCLUDES:%=-I%)
-CFLAGS+=    $(CPPFLAGS) $(CFLAGS_STD)   $(CFLAGS_$(BUILDENV))   $(CFLAGS_$(TARGET))         $(CFLAGS_EXTRA)
-CXXFLAGS+=  $(CPPFLAGS) $(CXXFLAGS_STD) $(CXXFLAGS_$(BUILDENV)) $(CXXFLAGS_$(TARGET))       $(CFLAGS_EXTRA) $(CXXFLAGS_EXTRA)
-LDFLAGS+=               $(CFLAGS_STD) $(CXXFLAGS_STD) $(LDFLAGS_$(BUILDENV))  $(LDFLAGS_$(TARGET))        $(CFLAGS_EXTRA) $(LDFLAGS_EXTRA)
-
+CFLAGS+=    $(CPPFLAGS) $(CFLAGS_STD)   $(CFLAGS_PKGCONFIG) $(CFLAGS_$(BUILDENV))   $(CFLAGS_$(TARGET))         $(CFLAGS_EXTRA)
+CXXFLAGS+=  $(CPPFLAGS) $(CXXFLAGS_STD) $(CFLAGS_PKGCONFIG) $(CXXFLAGS_$(BUILDENV)) $(CXXFLAGS_$(TARGET))       $(CFLAGS_EXTRA) $(CXXFLAGS_EXTRA)
+LDFLAGS+=               $(CFLAGS_STD) $(CXXFLAGS_STD) $(LDFLAGS_PKGCONFIG) $(LDFLAGS_$(BUILDENV))  $(LDFLAGS_$(TARGET))        $(CFLAGS_EXTRA) $(LDFLAGS_EXTRA)
 
 # Get BUILDOBJ from the BUILD_OBJECTS environment variable if set
 BUILDOBJ=	$(BUILD_OBJECTS)
@@ -98,6 +97,9 @@ BUILD_INDEX:=   1
 BUILD_COUNT:=   $(words $(SOURCES))
 GIT_REVISION:=  $(shell git rev-parse --short HEAD 2> /dev/null || echo "unknown")
 PROFILE_OUTPUT:=$(subst $(EXE_EXT),,$(OBJROOT_EXE))_prof_$(GIT_REVISION).vsp
+
+-include $(PKGCONFIGS:%=$(OBJROOT)/%.pkg-config.mk)
+
 
 #------------------------------------------------------------------------------
 #   User targets
@@ -183,7 +185,7 @@ product:$(OBJPRODUCTS)
 objects:$(OBJDIR:%=%/.mkdir) $(OBJECTS)
 
 # "Hooks" for pre and post build steps
-config: $(CONFIG:%=config.h)
+config: $(CONFIG:%=config.h) $(PKGCONFIGS:%=$(OBJROOT)/%.pkg-config.mk)
 prebuild:
 postbuild:
 
@@ -208,6 +210,11 @@ product.test: product .ALWAYS
 	$(PRINT_INSTALL) $(INSTALL) $* $(PREFIX_DLL)
 %.install_hdr: $(PREFIX_HDR).mkdir
 	$(PRINT_INSTALL) $(INSTALL) $* $(PREFIX_HDR)
+
+# Check pkg-config
+$(OBJROOT)/%.pkg-config.mk: $(MAKEFILE_DEPS) $(OBJROOT)/.mkdir
+	$(PRINT_PKGCONFIG) pkg-config $*
+	$(PRINT_GENERATE)  echo CFLAGS_PKGCONFIG+=`pkg-config --cflags $*` > $@ && echo LDFLAGS_PKGCONFIG+=`pkg-config --libs $*` >> $@
 
 # Benchmarking (always done with profile target)
 benchmark:	$(BENCHMARK:%=%.benchmark) $(BENCHMARKS:%=%.benchmark)
@@ -299,7 +306,8 @@ PRINT_COPY=     $(PRINT_COMMAND) $(INFO) "[COPY]" $< '=>' $@ ;
 PRINT_DEPEND= 	$(PRINT_COMMAND) $(INFO) "[DEPEND] " $< ;
 PRINT_TEST= 	$(PRINT_COMMAND) $(INFO) "[TEST]" $(@:.test=) ;
 PRINT_CONFIG= 	$(PRINT_COMMAND) $(INFO) "[CONFIG]" "$*" ;
-PRINT_LIBCONFIG=$(PRINT_COMMAND) $(INFO) "[CONFIG]" "lib$*" ;
+PRINT_PKGCONFIG=$(PRINT_COMMAND) $(INFO) "[PKGCONFIG]" "$*" ;
+PRINT_LIBCONFIG=$(PRINT_COMMAND) $(INFO) "[LIBCONFIG]" "lib$*" ;
 endif
 
 logs.mkdir: $(dir $(BUILD_LOG))/.mkdir $(dir $(BUILD_SAVED_LOG))/.mkdir
