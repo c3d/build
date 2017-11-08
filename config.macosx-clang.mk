@@ -1,5 +1,5 @@
 #******************************************************************************
-# config.macosx-clang.mk                                      Recorder project 
+# config.macosx-clang.mk                                      Recorder project
 #******************************************************************************
 #
 #  File Description:
@@ -29,10 +29,8 @@ include $(BUILD)config.gnu.mk
 CFLAGS_ssev4=	-msse4
 DLL_EXT=	.dylib
 MAKE_LIB=	$(LIBTOOL) -static		$(LINK_INPUTS)		-o $@
-MAKE_DLL=	$(LD)  $(LDFLAGS) $(LDFLAGS_$*) $(LINK_INPUTS) \
-                       -dynamiclib -undefined suppress -flat_namespace  -o $@
+MAKE_DLL=	$(LD)  -shared $(LINK_INPUTS)				-o $(shell pwd)/$@
 
 
 # On MacOSX, we will use basic frameworks e.g. for string and filesystem functions
 LDFLAGS_macosx-clang=	-framework CoreFoundation -framework CoreServices
-
