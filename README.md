@@ -256,7 +256,10 @@ Often, a project is made of several directories or libraries. In
   must be built every time.
 
 * `LIBRARIES` lists libraries, which can be subdirectories or not,
-  which the products depends on.
+  which the products depends on. Each library should end in either
+  `.lib` or `.dll` to indicate if it's to be shared statically or
+  dynamically. Note that the `PRODUCTS` in the corresponding
+  subdirectory should match and produce the correct output.
 
 Subdirectories are re-built everytime a top-level build is started,
 whereas libraries are re-built only if they are missing. It is

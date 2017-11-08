@@ -1,4 +1,4 @@
-int lib2_bar()
+int lib2_bar(void)
 {
     return 0;
 }

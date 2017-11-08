@@ -13,6 +13,9 @@
 #warning "We expect to have iostream"
 #endif
 
+extern "C" int lib1_foo(void);
+extern "C" int lib2_bar(void);
+
 int main()
 {
 #if HAVE_IOSTREAM
@@ -22,4 +25,11 @@ int main()
 #else
 #warning "Building without <iostream> or <stdio.h>. Cross-compiling?"
 #endif // HAVE_IOSTREAM
+
+    if (lib1_foo() != 0)
+      exit(1);
+    if (lib2_bar() != 0)
+      exit(2);
+
+    return 0;
 }
