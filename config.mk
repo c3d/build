@@ -148,6 +148,7 @@ COLORIZE=   | grep $(LINE_BUFFERED) -v -e "^true &&" -e "^[A-Za-z0-9_-]\+\.\(c\|
 #   Logging
 #------------------------------------------------------------------------------
 
+ifndef V
 LOG_COMMANDS=       PRINT_COMMAND="true && " 2>&1              | \
                     tee $(BUILD_LOG)                             \
                     $(COLORIZE) ;                                \
@@ -160,6 +161,7 @@ LOG_COMMANDS=       PRINT_COMMAND="true && " 2>&1              | \
                              wc -l` Warnings in $(BUILD_LOG);    \
                     cp $(BUILD_LOG) $(BUILD_SAVED_LOG);          \
                     exit $$RC
+endif
 
 
 #------------------------------------------------------------------------------

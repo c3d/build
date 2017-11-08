@@ -153,6 +153,7 @@ help:
 
 build: hello config libraries recurse prebuild objects product postbuild goodbye
 
+ifndef V
 hello:
 	@$(INFO) "[BEGIN]" $(TARGET) $(BUILDENV) in $(PRETTY_DIR)
 goodbye:
@@ -160,8 +161,14 @@ goodbye:
 
 hello.install:
 	@$(INFO) "[INSTALL]"	$(TARGET) $(BUILDENV) in $(PRETTY_DIR)
-hello.clean:o
+hello.clean:
 	@$(INFO) "[CLEAN]" $(TARGET) $(BUILDENV) in $(PRETTY_DIR)
+else
+hello:
+goodbye:
+hello.install:
+hello.clean:
+endif
 
 libraries: $(OBJLIBS) $(OBJDLLS)
 product:$(OBJPRODUCTS)
@@ -212,7 +219,7 @@ top-%:
 
 # Verbose build (show all commands as executed)
 v-% verbose-%:
-	$(PRINT_COMMAND) $(MAKE) $* PRINT_COMPILE= PRINT_BUILD= PRINT_DEPEND= PRINT_DEPALL= PRINT_COMMAND= PRINT_TEST=
+	$(PRINT_COMMAND) $(MAKE) $* V=1
 
 # Timed build (show the time for each step)
 t-% time-%:
@@ -282,6 +289,7 @@ PRINT_COUNT=	$(shell printf "%3d/%d" $(BUILD_INDEX) $(BUILD_COUNT))$(INCR_INDEX)
 PRINT_PCT=	$(shell printf "%3d%%" $$(( ($(BUILD_HIGH) - $(BUILD_LOW)) * $(BUILD_INDEX) / $(BUILD_COUNT) + $(BUILD_LOW))))$(INCR_INDEX)
 
 # Printing out various kinds of statements
+ifndef V
 PRINT_COMMAND= 	@
 PRINT_COMPILE=	$(PRINT_COMMAND) $(INFO) "[COMPILE$(PRINT_COUNT)] " $<;
 PRINT_BUILD= 	$(PRINT_COMMAND) $(INFO) "[BUILD]" $(shell basename $@);
@@ -292,6 +300,7 @@ PRINT_DEPEND= 	$(PRINT_COMMAND) $(INFO) "[DEPEND] " $< ;
 PRINT_TEST= 	$(PRINT_COMMAND) $(INFO) "[TEST]" $(@:.test=) ;
 PRINT_CONFIG= 	$(PRINT_COMMAND) $(INFO) "[CONFIG]" "$*" ;
 PRINT_LIBCONFIG=$(PRINT_COMMAND) $(INFO) "[CONFIG]" "lib$*" ;
+endif
 
 logs.mkdir: $(dir $(BUILD_LOG))/.mkdir $(dir $(BUILD_SAVED_LOG))/.mkdir
 %/.mkdir:
