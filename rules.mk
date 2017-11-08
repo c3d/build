@@ -56,9 +56,9 @@ PRODUCTS_EXE:=  $(patsubst %.exe,%$(EXE_EXT),$(filter %.exe,$(PRODUCTS)))
 PRODUCTS_LIB:=  $(patsubst %.lib,%$(LIB_EXT),$(filter %.lib,$(PRODUCTS)))
 PRODUCTS_DLL:=  $(patsubst %.dll,%$(DLL_EXT),$(filter %.dll,$(PRODUCTS)))
 PRODUCTS_OTHER:=$(filter-out %.exe %.lib %.dll %$(EXE_EXT) %$(LIB_EXT) %$(DLL_EXT), $(PRODUCTS))
-OBJROOT_EXE:=   $(PRODUCTS_EXE:%=$(OBJROOT)/%)
-OBJROOT_LIB:=   $(PRODUCTS_LIB:%=$(OBJROOT)/%)
-OBJROOT_DLL:=   $(PRODUCTS_DLL:%=$(OBJROOT)/%)
+OBJROOT_EXE:=   $(PRODUCTS_EXE:%=$(OBJROOT)/$(EXE_PFX)%)
+OBJROOT_LIB:=   $(PRODUCTS_LIB:%=$(OBJROOT)/$(LIB_PFX)%)
+OBJROOT_DLL:=   $(PRODUCTS_DLL:%=$(OBJROOT)/$(DLL_PFX)%)
 OBJROOT_OTHER:= $(PRODUCTS_OTHER:%=$(OBJROOT)/%)
 OBJPRODUCTS:=   $(OBJROOT_EXE) $(OBJROOT_LIB) $(OBJROOT_DLL) $(OBJROOT_OTHER)
 
@@ -76,9 +76,14 @@ endif
 
 LIBNAMES:=      $(filter %.lib, $(notdir $(LIBRARIES)))
 DLLNAMES:=      $(filter %.dll, $(notdir $(LIBRARIES)))
-OBJLIBS:=	$(LIBNAMES:%.lib=$(OBJROOT)/%$(LIB_EXT))
-OBJDLLS:=       $(DLLNAMES:%.dll=$(OBJROOT)/%$(DLL_EXT))
-LINK_INPUTS:=   $(OBJECTS) $(LINK_LIBS) $(OBJLIBS) $(OBJDLLS)
+OBJLIBS:=	$(LIBNAMES:%.lib=$(OBJROOT)/$(LIB_PFX)%$(LIB_EXT))
+OBJDLLS:=       $(DLLNAMES:%.dll=$(OBJROOT)/$(DLL_PFX)%$(DLL_EXT))
+LINK_PATHS:=	$(OBJROOT:%=$(LINK_DIR_OPT)%)
+LINK_LIBS:=	$(LINK_LIBS)				\
+		$(LIBNAMES:%.lib=$(LINK_LIB_OPT)%)	\
+		$(DLLNAMES:%.dll=$(LINK_DLL_OPT)%)
+LINK_INPUTS:=   $(OBJECTS) $(OBJLIBS) $(OBJDLLS)
+LINK_CMDLINE:=	$(OBJECTS) $(LINK_PATHS) $(LINK_LIBS)
 ifneq ($(words $(LINK_INPUTS)),0)
 LINK_WINPUTS=   $(patsubst %,"%", $(shell cygpath -aw $(LINK_INPUTS)))
 endif
@@ -181,15 +186,15 @@ postbuild:
 
 # Run the test (in the object directory)
 product.test: product .ALWAYS
-	$(PRINT_TEST) $(OBJROOT_EXE) $(PRODUCTS_OPTS)
+	$(PRINT_TEST) $(TEST_ENV) $(OBJROOT_EXE) $(PRODUCTS_OPTS)
 
 # Run a test from a C or C++ file to link against current library
 %.c.test: $(OBJROOT_LIB) .ALWAYS
 	$(PRINT_BUILD) $(MAKE) SOURCES=$*.c LINK_LIBS=$(OBJROOT_LIB) PRODUCTS=$*.exe $(TARGET)
-	$(PRINT_TEST) $(TEST_CMD_$*) $(OBJROOT)/$*$(EXE_EXT) $(TEST_ARGS_$*)
+	$(PRINT_TEST) $(TEST_ENV) $(TEST_CMD_$*) $(OBJROOT)/$*$(EXE_EXT) $(TEST_ARGS_$*)
 %.cpp.test: $(OBJROOT_LIB) .ALWAYS
 	$(PRINT_BUILD) $(MAKE) SOURCES=$*.cpp LINK_LIBS=$(OBJROOT_LIB) PRODUCTS=$*.exe $(TARGET)
-	$(PRINT_TEST) $(TEST_CMD_$*) $(OBJROOT)/$*$(EXE_EXT) $(TEST_ARGS_$*)
+	$(PRINT_TEST) $(TEST_ENV) $(TEST_CMD_$*) $(OBJROOT)/$*$(EXE_EXT) $(TEST_ARGS_$*)
 
 # Installing the product: always need to build it first
 %.install_exe: $(PREFIX_BIN).mkdir
@@ -266,9 +271,9 @@ else
 endif
 
 # If LIBRARIES=foo/bar, go to directory foo/bar, which should build bar.a
-$(OBJROOT)/%$(LIB_EXT): $(DEEP_BUILD)
+$(OBJROOT)/$(LIB_PFX)%$(LIB_EXT): $(DEEP_BUILD)
 	+$(PRINT_COMMAND) cd $(filter %$*, $(LIBRARIES:.lib=) $(SUBDIRS)) && $(RECURSE_CMD)
-$(OBJROOT)/%$(DLL_EXT): $(DEEP_BUILD)
+$(OBJROOT)/$(DLL_PFX)%$(DLL_EXT): $(DEEP_BUILD)
 	+$(PRINT_COMMAND) cd $(filter %$*, $(LIBRARIES:.dll=) $(SUBDIRS)) && $(RECURSE_CMD)
 %/.test:
 	+$(PRINT_TEST) cd $* && $(MAKE) TARGET=$(TARGET) test

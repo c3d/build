@@ -53,4 +53,4 @@ BENCHMARKS=product
 include $(BUILD)rules.mk
 
 count-characters.test:
-	@echo Output has `$(OBJPRODUCTS) | wc -c` characters, should be 35
+	@echo Output has `$(TEST_ENV) $(OBJPRODUCTS) | wc -c` characters, should be 35

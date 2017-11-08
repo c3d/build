@@ -28,8 +28,8 @@ include $(BUILD)config.gnu.mk
 
 CFLAGS_ssev4=	-msse4
 DLL_EXT=	.dylib
-MAKE_LIB=	$(LIBTOOL) -static		$(LINK_INPUTS)		-o $@
-MAKE_DLL=	$(LD)  -shared $(LINK_INPUTS)				-o $(shell pwd)/$@
+MAKE_LIB=	$(LIBTOOL) -static		$(LINK_INPUTS)	-o $@
+MAKE_DLL=	$(LD)      -shared		$(LINK_INPUTS)	-o $(shell pwd)/$@
 
 
 # On MacOSX, we will use basic frameworks e.g. for string and filesystem functions
