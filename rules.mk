@@ -122,7 +122,12 @@ install: hello.install                          \
         $(OBJROOT_DLL:%=%.install_dll)          \
         $(EXE_INSTALL:%=%.install_exe)          \
         $(LIB_INSTALL:%=%.install_lib)          \
-        $(DLL_INSTALL:%=%.install_dll)
+        $(DLL_INSTALL:%=%.install_dll)		\
+	$(OBJLIBS:%=%.install_lib)		\
+	$(OBJDLLS:%=%.install_dll)
+ifdef SUBDIRS
+	$(PRINT_COMMAND) $(MAKE) RECURSE=install recurse LOG_COMMANDS= TIME=
+endif
 
 clean: hello.clean
 	-$(PRINT_COMMAND) rm -f $(GARBAGE) $(TOCLEAN) $(OBJECTS) $(DEPENDENCIES) $(OBJPRODUCTS) config.h
@@ -262,13 +267,8 @@ recurse: $(SUBDIRS:%=%.recurse)
 	+$(PRINT_COMMAND) $(MAKE) $*.recurse BUILD_DLL=dll
 %.project.recurse:  | hello prebuild
 	+$(PRINT_COMMAND) $(MAKE) PROJECT=$*
-ifeq ($(RECURSE),clean)
-%.recurse:          | hello
-	+$(PRINT_COMMAND) cd $* && $(RECURSE_CMD)
-else
 %.recurse:          | hello prebuild
 	+$(PRINT_COMMAND) cd $* && $(RECURSE_CMD)
-endif
 
 # If LIBRARIES=foo/bar, go to directory foo/bar, which should build bar.a
 $(OBJROOT)/$(LIB_PFX)%$(LIB_EXT): $(DEEP_BUILD)
@@ -278,11 +278,6 @@ $(OBJROOT)/$(DLL_PFX)%$(DLL_EXT): $(DEEP_BUILD)
 %/.test:
 	+$(PRINT_TEST) cd $* && $(MAKE) TARGET=$(TARGET) test
 deep_build:
-
-recursive:
-ifdef SUBDIRS
-	$(PRINT_COMMAND) $(MAKE) recurse RECURSE=$(MAKECMDGOALS) HELLO=$(HELLO_$(MAKECMDGOALS))
-endif
 
 
 #------------------------------------------------------------------------------
