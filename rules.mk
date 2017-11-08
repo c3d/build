@@ -116,7 +116,7 @@ test tests check: $(TARGET)
 startup restart rebuild: clean all
 
 # Installation
-install: hello.install                          \
+install: 					\
         $(OBJROOT_EXE:%=%.install_exe)          \
         $(OBJROOT_LIB:%=%.install_lib)          \
         $(OBJROOT_DLL:%=%.install_dll)          \
@@ -202,12 +202,12 @@ product.test: product .ALWAYS
 	$(PRINT_TEST) $(TEST_ENV) $(TEST_CMD_$*) $(OBJROOT)/$*$(EXE_EXT) $(TEST_ARGS_$*)
 
 # Installing the product: always need to build it first
-%.install_exe: $(PREFIX_BIN).mkdir
-	$(PRINT_INSTALL) $(INSTALL) $* $(PREFIX_BIN)
-%.install_lib: $(PREFIX_LIB).mkdir
-	$(PRINT_INSTALL) $(INSTALL) $* $(PREFIX_LIB)
-%.install_dll: $(PREFIX_DLL).mkdir
-	$(PRINT_INSTALL) $(INSTALL) $* $(PREFIX_DLL)
+%.install_exe: build
+	$(PRINT_INSTALL) mkdir -p $(PREFIX_BIN) && $(INSTALL) $* $(PREFIX_BIN)
+%.install_lib: build $(PREFIX_LIB).mkdir
+	$(PRINT_INSTALL) mkdir -p $(PREFIX_LIB) && $(INSTALL) $* $(PREFIX_LIB)
+%.install_dll: build
+	$(PRINT_INSTALL) mkdir -p $(PREFIX_DLL) && $(INSTALL) $* $(PREFIX_DLL)
 
 # Benchmarking (always done with profile target)
 benchmark:	$(BENCHMARK:%=%.benchmark) $(BENCHMARKS:%=%.benchmark)
