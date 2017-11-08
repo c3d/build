@@ -74,9 +74,11 @@ $(error Error: Variable PRODUCTS must end in .exe, .lib or .dll)
 endif
 endif
 
-LIBNAMES:=      $(notdir $(LIBRARIES))
-OBJLIBRARIES:=  $(LIBNAMES:%=$(OBJROOT)/%$(LIB_EXT))
-LINK_INPUTS:=   $(OBJECTS) $(LINK_LIBS) $(OBJLIBRARIES)
+LIBNAMES:=      $(filter %.lib, $(notdir $(LIBRARIES)))
+DLLNAMES:=      $(filter %.dll, $(notdir $(LIBRARIES)))
+OBJLIBS:=	$(LIBNAMES:%.lib=$(OBJROOT)/%$(LIB_EXT))
+OBJDLLS:=       $(DLLNAMES:%.dll=$(OBJROOT)/%$(DLL_EXT))
+LINK_INPUTS:=   $(OBJECTS) $(LINK_LIBS) $(OBJLIBS) $(OBJDLLS)
 ifneq ($(words $(LINK_INPUTS)),0)
 LINK_WINPUTS=   $(patsubst %,"%", $(shell cygpath -aw $(LINK_INPUTS)))
 endif
@@ -158,10 +160,10 @@ goodbye:
 
 hello.install:
 	@$(INFO) "[INSTALL]"	$(TARGET) $(BUILDENV) in $(PRETTY_DIR)
-hello.clean:
+hello.clean:o
 	@$(INFO) "[CLEAN]" $(TARGET) $(BUILDENV) in $(PRETTY_DIR)
 
-libraries: $(OBJLIBRARIES)
+libraries: $(OBJLIBS) $(OBJDLLS)
 product:$(OBJPRODUCTS)
 objects:$(OBJDIR:%=%/.mkdir) $(OBJECTS)
 
@@ -258,7 +260,9 @@ endif
 
 # If LIBRARIES=foo/bar, go to directory foo/bar, which should build bar.a
 $(OBJROOT)/%$(LIB_EXT): $(DEEP_BUILD)
-	+$(PRINT_COMMAND) cd $(filter %$*, $(LIBRARIES) $(SUBDIRS)) && $(RECURSE_CMD)
+	+$(PRINT_COMMAND) cd $(filter %$*, $(LIBRARIES:.lib=) $(SUBDIRS)) && $(RECURSE_CMD)
+$(OBJROOT)/%$(DLL_EXT): $(DEEP_BUILD)
+	+$(PRINT_COMMAND) cd $(filter %$*, $(LIBRARIES:.dll=) $(SUBDIRS)) && $(RECURSE_CMD)
 %/.test:
 	+$(PRINT_TEST) cd $* && $(MAKE) TARGET=$(TARGET) test
 deep_build:

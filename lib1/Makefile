@@ -21,6 +21,6 @@
 
 BUILD=../
 SOURCES=lib1.c
-PRODUCTS=lib1.lib
+PRODUCTS=lib1.dll
 
 include $(BUILD)rules.mk

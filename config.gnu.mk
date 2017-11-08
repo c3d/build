@@ -72,7 +72,7 @@ MAKE_CXX=       $(CXX)  $(CXXFLAGS) $(CPPFLAGS_$*) $(CXXFLAGS_$*) -c $< -o $@ $(
 MAKE_AS=        $(CC)   $(CFLAGS)   $(CPPFLAGS_$*) $(CFLAGS_$*)   -c $< -o $@ $(DEPFLAGS)
 MAKE_OBJDIR=    mkdir -p $*                                       && touch $@
 MAKE_LIB=       $(AR) $@                        $(LINK_INPUTS)&& $(RANLIB) $@
-MAKE_DLL=       $(LIBTOOL) -shared              $(LINK_INPUTS)          -o $@
+MAKE_DLL=       $(LD) -shared                   $(LINK_INPUTS)          -o $@
 MAKE_EXE=       $(LD) -o $@ $(LINK_INPUTS) $(LDFLAGS) $(LDFLAGS_$*)
 
 
