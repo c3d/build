@@ -110,13 +110,15 @@ debug opt release profile: logs.mkdir
 
 # Testing
 test tests check: $(TARGET)
-	$(PRINT_COMMAND) $(MAKE) RECURSE=test $(TESTS:%=%.test) LOG_COMMANDS= TIME=
+	$(PRINT_COMMAND) $(MAKE) RECURSE=test $(TESTS:%=%.test) LOG_COMMANDS= TIME= $(LOG_COMMANDS)
 
 # Clean builds
 startup restart rebuild: clean all
 
 # Installation
-install: 					\
+install: all
+	$(PRINT_COMMAND) $(MAKE) RECURSE=install install-internal recurse LOG_COMMANDS= TIME= $(LOG_COMMANDS)
+install-internal:				\
         $(OBJROOT_EXE:%=%.install_exe)          \
         $(OBJROOT_LIB:%=%.install_lib)          \
         $(OBJROOT_DLL:%=%.install_dll)          \
@@ -125,9 +127,6 @@ install: 					\
         $(DLL_INSTALL:%=%.install_dll)		\
 	$(OBJLIBS:%=%.install_lib)		\
 	$(OBJDLLS:%=%.install_dll)
-ifdef SUBDIRS
-	$(PRINT_COMMAND) $(MAKE) RECURSE=install recurse LOG_COMMANDS= TIME=
-endif
 
 clean: hello.clean
 	-$(PRINT_COMMAND) rm -f $(GARBAGE) $(TOCLEAN) $(OBJECTS) $(DEPENDENCIES) $(OBJPRODUCTS) config.h
