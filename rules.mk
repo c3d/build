@@ -332,7 +332,11 @@ ifdef TARGET
 DEPENDENCIES=$(SOURCES:%=$(OBJDIR)/%$(OBJ_EXT).d)
 OBJDIR_DEPS=$(OBJDIR)/%.deps/.mkdir
 
+ifeq (3.80,$(firstword $(sort $(MAKE_VERSION) 3.80)))
 OBJ_DEPS=$(OBJDIR_DEPS) $(MAKEFILE_DEPS) | hello prebuild
+else
+OBJ_DEPS=$(OBJDIR_DEPS) $(MAKEFILE_DEPS)  hello prebuild
+endif
 
 ifndef DEPFLAGS
 $(OBJDIR)/%.c$(OBJ_EXT).d:		%.c		$(OBJ_DEPS)
