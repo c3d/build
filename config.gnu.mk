@@ -62,6 +62,9 @@ LIB_EXT=        .a
 EXE_EXT=
 DLL_EXT=        .so
 
+EXE_PFX=
+LIB_PFX=	lib
+DLL_PFX=	lib
 
 #------------------------------------------------------------------------------
 #  Build rules
@@ -71,9 +74,13 @@ MAKE_CC=        $(CC)   $(CFLAGS)   $(CPPFLAGS_$*) $(CFLAGS_$*)   -c $< -o $@ $(
 MAKE_CXX=       $(CXX)  $(CXXFLAGS) $(CPPFLAGS_$*) $(CXXFLAGS_$*) -c $< -o $@ $(DEPFLAGS)
 MAKE_AS=        $(CC)   $(CFLAGS)   $(CPPFLAGS_$*) $(CFLAGS_$*)   -c $< -o $@ $(DEPFLAGS)
 MAKE_OBJDIR=    mkdir -p $*                                       && touch $@
-MAKE_LIB=       $(AR) $@                        $(LINK_INPUTS)&& $(RANLIB) $@
-MAKE_DLL=       $(LD) -shared                   $(LINK_INPUTS)          -o $@
-MAKE_EXE=       $(LD) -o $@ $(LINK_INPUTS) $(LDFLAGS) $(LDFLAGS_$*)
+MAKE_LIB=       $(AR) $@         $(LDFLAGS_$*)  $(LINK_INPUTS)&& $(RANLIB) $@
+MAKE_DLL=       $(LD) -shared    $(LDFLAGS_$*)  $(LINK_CMDLINE)         -o $@
+MAKE_EXE=       $(LD)            $(LDFLAGS_$*)  $(LINK_CMDLINE)         -o $@
+
+LINK_DIR_OPT=	-L
+LINK_LIB_OPT=	-l
+LINK_DLL_OPT=	-l
 
 
 #------------------------------------------------------------------------------
@@ -83,6 +90,13 @@ MAKE_EXE=       $(LD) -o $@ $(LINK_INPUTS) $(LDFLAGS) $(LDFLAGS_$*)
 CC_DEPEND=      $(CC)  $(CPPFLAGS) $(CPPFLAGS_$*) -MM -MP -MF $@ -MT $(@:.d=) $<
 CXX_DEPEND=     $(CXX) $(CPPFLAGS) $(CPPFLAGS_$*) -MM -MP -MF $@ -MT $(@:.d=) $<
 AS_DEPEND=      $(CC)  $(CPPFLAGS) $(CPPFLAGS_$*) -MM -MP -MF $@ -MT $(@:.d=) $<
+
+
+#------------------------------------------------------------------------------
+#  Test environment
+#------------------------------------------------------------------------------
+
+TEST_ENV=	LD_LIBRARY_PATH=$(OBJROOT)
 
 
 #------------------------------------------------------------------------------

@@ -97,6 +97,14 @@ LIB_EXT=.lib
 EXE_EXT=.exe
 DLL_EXT=.dll
 
+EXE_PFX=
+LIB_PFX=lib
+DLL_PFX=lib
+
+LINK_DIR_OPT=-L:
+LINK_LIB_OPT=-l:
+LINK_DLL_OPT=-l:
+
 
 #------------------------------------------------------------------------------
 #  Build rules
@@ -111,9 +119,9 @@ DLL_EXT=.dll
 MAKE_CC=       $(CC)  $(CFLAGS)   $(CPPFLAGS_$*) $(CFLAGS_$*)   -c -Fo$@ $<
 MAKE_CXX=      $(CXX) $(CXXFLAGS) $(CPPFLAGS_$*) $(CXXFLAGS_$*) -c -Fo$@ $<
 MAKE_OBJDIR=   mkdir -p $* && touch $@
-MAKE_LIB=      $(MSLIB) $(LINK_INPUTS)                                -out:$@
-MAKE_DLL=      $(LD) $(LDFLAGS) $(LDFLAGS_$*)   $(LINK_INPUTS) -dll   -out:$@
-MAKE_EXE=      $(LD) $(LDFLAGS) $(LDFLAGS_$*)   $(LINK_INPUTS)        -out:$@
+MAKE_LIB=      $(MSLIB)				$(LINK_INPUTS)        -out:$@
+MAKE_DLL=      $(LD) $(LDFLAGS) $(LDFLAGS_$*)   $(LINK_CMDLINE)-dll   -out:$@
+MAKE_EXE=      $(LD) $(LDFLAGS) $(LDFLAGS_$*)   $(LINK_CMDLINE)       -out:$@
 
 
 #------------------------------------------------------------------------------
