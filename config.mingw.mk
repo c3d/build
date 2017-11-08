@@ -1,5 +1,5 @@
 #******************************************************************************
-# config.mingw.mk                                             Recorder project 
+# config.mingw.mk                                             Recorder project
 #******************************************************************************
 #
 #  File Description:
@@ -31,10 +31,9 @@ include $(BUILD)config.gnu.mk
 # MinGW does not have --line-buffered for colorized builds
 LINE_BUFFERED=
 
-
 # Windows overrides for extensions
 EXE_EXT=        .exe
-LIB_EXT=        .lib
+LIB_EXT=        .a
 DLL_EXT=        .dll
 
 # MinGW has no 'install' program

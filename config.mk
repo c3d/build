@@ -63,8 +63,8 @@ PREFIX_DLL?=$(PREFIX_LIB)
 # to the relevant GNU option names as follows:
 #   CCFLAGS_STD=$(CC_FLAGS_STD_$(CC_STD))
 #   CCFLAGS_STD_gnu11=[whatever option is needed here]
-CC_STD=gnu11
-CXX_STD=gnu++14
+CC_STD	?=gnu11
+CXX_STD	?=gnu++11
 
 # Compilation flags
 DEFINES_debug=      DEBUG
