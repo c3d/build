@@ -51,7 +51,7 @@ endif
 
 # Configuration variables
 OBJDIR:=        $(OBJROOT)$(DIR)
-OBJECTS:=       $(SOURCES:%=$(OBJDIR)/%$(OBJ_EXT))
+OBJECTS=        $(SOURCES:%=$(OBJDIR)/%$(OBJ_EXT))
 PRODUCTS_EXE:=  $(patsubst %.exe,%$(EXE_EXT),$(filter %.exe,$(PRODUCTS)))
 PRODUCTS_LIB:=  $(patsubst %.lib,%$(LIB_EXT),$(filter %.lib,$(PRODUCTS)))
 PRODUCTS_DLL:=  $(patsubst %.dll,%$(DLL_EXT),$(filter %.dll,$(PRODUCTS)))
