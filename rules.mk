@@ -38,8 +38,8 @@ ifndef DIR
 # the symbolic link path (as for BASEDIR), rather than the physical path
 
 # So this is necessary for the substitution to happen correctly. Ugh!
-BASEDIR:=       $(shell cd ./$(BUILD)/..; pwd)
-FULLDIR:=       $(shell cd ./; pwd)
+BASEDIR:=       $(realpath $(BUILD)..)
+FULLDIR:=       $(abspath .)
 DIR:=           $(subst $(BASEDIR),,$(FULLDIR))
 PRETTY_DIR:=    $(subst $(BASEDIR),[top],$(FULLDIR))
 BASENAME_DIR:=  $(shell basename $(FULLDIR))
@@ -88,7 +88,7 @@ LINK_WINPUTS=   $(patsubst %,"%", $(shell cygpath -aw $(LINK_INPUTS)))
 endif
 PRINT_DIR=              --no-print-directory
 RECURSE_BUILDENV=$(BUILDENV)
-RECURSE_CMD=    $(MAKE) $(PRINT_DIR) TARGET=$(TARGET) BUILDENV=$(RECURSE_BUILDENV) $(RECURSE) COLORIZE=
+RECURSE_CMD=    $(MAKE) $(PRINT_DIR) TARGET=$(TARGET) BUILDENV=$(RECURSE_BUILDENV) BUILD="$(abspath $(BUILD))/" $(RECURSE) COLORIZE=
 MAKEFILE_DEPS:= $(MAKEFILE_LIST)
 NOT_PARALLEL?=  .NOTPARALLEL
 BUILD_LOW?=     0
@@ -232,7 +232,7 @@ product.benchmark: product .ALWAYS
 
 # Make from the top-level directory (useful from child directories)
 top-%:
-	cd ./$(BUILD); $(MAKE) $*
+	cd $(BUILD); $(MAKE) $*
 
 # Verbose build (show all commands as executed)
 v-% verbose-%:
