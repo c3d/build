@@ -181,6 +181,7 @@ product:$(OBJPRODUCTS)
 objects:$(OBJDIR:%=%/.mkdir) $(OBJECTS)
 
 # "Hooks" for pre and post build steps
+config: $(VARIANTS:%=%.variant)
 config: $(CONFIG:%=config.h) $(PKGCONFIGS:%=$(OBJROOT)/%.pkg-config.mk)
 prebuild:
 postbuild:
@@ -282,6 +283,9 @@ $(OBJROOT)/$(DLL_PFX)%$(DLL_EXT): $(DEEP_BUILD)
 	+$(PRINT_TEST) cd $* && $(MAKE) TARGET=$(TARGET) test
 deep_build:
 
+%.variant:
+	$(PRINT_VARIANT) $(MAKE) VARIANTS= VARIANT=$* RECURSE=build build
+
 
 #------------------------------------------------------------------------------
 #  Progress printout
@@ -297,6 +301,7 @@ PRINT_COMMAND= 	@
 PRINT_COMPILE=	$(PRINT_COMMAND) $(INFO) "[COMPILE$(PRINT_COUNT)] " $<;
 PRINT_BUILD= 	$(PRINT_COMMAND) $(INFO) "[BUILD]" $(shell basename $@);
 PRINT_GENERATE= $(PRINT_COMMAND) $(INFO) "[GENERATE]" "$(shell basename "$@")";
+PRINT_VARIANT=  $(PRINT_COMMAND) $(INFO) "[VARIANT]" "$*";
 PRINT_INSTALL=  $(PRINT_COMMAND) $(INFO) "[INSTALL] " $(*F) in $(<D);
 PRINT_COPY=     $(PRINT_COMMAND) $(INFO) "[COPY]" $< '=>' $@ ;
 PRINT_DEPEND= 	$(PRINT_COMMAND) $(INFO) "[DEPEND] " $< ;
