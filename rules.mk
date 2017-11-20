@@ -182,7 +182,8 @@ objects:$(OBJDIR:%=%/.mkdir) $(OBJECTS)
 
 # "Hooks" for pre and post build steps
 config: $(VARIANTS:%=%.variant)
-config: $(CONFIG:%=config.h) $(PKGCONFIGS:%=$(OBJROOT)/%.pkg-config.mk)
+config: $(CONFIG:%=config.h)
+config: $(PKGCONFIGS:%=$(OBJROOT)/%.pkg-config.mk)
 prebuild:
 postbuild:
 
