@@ -212,7 +212,7 @@ product.test: product .ALWAYS
 # Check pkg-config
 $(OBJROOT)/%.pkg-config.mk: $(MAKEFILE_DEPS) $(OBJROOT)/.mkdir
 	$(PRINT_PKGCONFIG) pkg-config $*
-	$(PRINT_GENERATE)  echo CFLAGS_PKGCONFIG+=`pkg-config --cflags $*` > $@ && echo LDFLAGS_PKGCONFIG+=`pkg-config --libs $*` >> $@
+	$(PRINT_COMMAND)  echo CFLAGS_PKGCONFIG+=`pkg-config --cflags $*` > $@ && echo LDFLAGS_PKGCONFIG+=`pkg-config --libs $*` >> $@
 
 # Benchmarking (always done with profile target)
 benchmark:	$(BENCHMARK:%=%.benchmark) $(BENCHMARKS:%=%.benchmark)
@@ -307,7 +307,7 @@ PRINT_INSTALL=  $(PRINT_COMMAND) $(INFO) "[INSTALL] " $(*F) in $(<D);
 PRINT_COPY=     $(PRINT_COMMAND) $(INFO) "[COPY]" $< '=>' $@ ;
 PRINT_DEPEND= 	$(PRINT_COMMAND) $(INFO) "[DEPEND] " $< ;
 PRINT_TEST= 	$(PRINT_COMMAND) $(INFO) "[TEST]" $(@:.test=) ;
-PRINT_CONFIG= 	$(PRINT_COMMAND) $(INFO) "[CONFIG]" "$*" ;
+PRINT_CONFIG= 	$(PRINT_COMMAND) $(INFO) "[CONFIG]" "$(ORIG_TARGET)" ;
 PRINT_PKGCONFIG=$(PRINT_COMMAND) $(INFO) "[PKGCONFIG]" "$*" ;
 PRINT_LIBCONFIG=$(PRINT_COMMAND) $(INFO) "[LIBCONFIG]" "lib$*" ;
 endif
@@ -359,7 +359,6 @@ endif
 #  Inference rules
 #------------------------------------------------------------------------------
 
-
 $(OBJDIR)/%.c$(OBJ_EXT): %.c 			$(OBJ_DEPS)
 	$(PRINT_COMPILE) $(MAKE_CC)
 $(OBJDIR)/%.cpp$(OBJ_EXT): %.cpp 		$(OBJ_DEPS)
@@ -402,7 +401,7 @@ config.h: $(NORM_CONFIG:%=$(OBJDIR)/HAVE_%)
 	$(PRINT_GENERATE) cat $^ > $@
 
 $(OBJDIR)/HAVE_%.mk: $(OBJDIR)/HAVE_% $(MAKEFILE_DEPS)
-	$(PRINT_GENERATE) $(MAKE_CONFIG)
+	$(PRINT_COMMAND) $(MAKE_CONFIG)
 -include $(NORM_CONFIG:%=$(OBJDIR)/HAVE_%.mk)
 
 # C standard headers, e.g. HAVE_<stdio.h>
