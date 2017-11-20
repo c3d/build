@@ -427,7 +427,10 @@ $(OBJDIR)/HAVE_%: $(OBJDIR)/CONFIG_CHECK_%.c
 	$(PRINT_CONFIG)	$(FN_CONFIG)
 $(OBJDIR)/CONFIG_CHECK_%.c: $(BUILD)config/check_%.c $(OBJDIR)/.mkdir
 	$(PRINT_COPY) cp $< $@
+$(OBJDIR)/CONFIG_CHECK_%.c: config/check_%.c $(OBJDIR)/.mkdir
+	$(PRINT_COPY) cp $< $@
 .PRECIOUS: $(OBJDIR)/CONFIG_CHECK_%.c
+
 
 
 #------------------------------------------------------------------------------
