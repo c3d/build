@@ -226,7 +226,8 @@ Similarly, you can do a release install with `make release-install`.
 
 Several environment variables control the behavior of `build`. The
 variables that can be configured are found at the beginning of `config.mk`.
-Some of the most useful include:
+Note that all directory names should end with a trailing `/`.
+Some of the most useful environment variables include:
 
 * `BUILDENV` specifies the build environment, for example
   `macosx-clang` when building on MacOSX with Clang. Parameters for
@@ -245,6 +246,12 @@ Some of the most useful include:
   (`PREFIX_LIB`) or shared libraries (`PREFIX_DLL`).
   For compatibility with `automake`-generated makefiles, you can also
   execute a staged install by setting `DESTDIR` when running `make`.
+
+* `OUTPUT` is the directory where all build output should go. The
+  default is `$(BUILD)/objects/`.
+
+* `LOGS` is the directory where all logs should go. The default is
+  `$(BUILD)/logs/`.
 
 
 ## Hierarchical projects
