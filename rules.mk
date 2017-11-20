@@ -29,9 +29,6 @@ CFLAGS+=    $(CPPFLAGS) $(CFLAGS_STD)   $(CFLAGS_PKGCONFIG) $(CFLAGS_$(BUILDENV)
 CXXFLAGS+=  $(CPPFLAGS) $(CXXFLAGS_STD) $(CFLAGS_PKGCONFIG) $(CXXFLAGS_$(BUILDENV)) $(CXXFLAGS_$(TARGET))       $(CFLAGS_EXTRA) $(CXXFLAGS_EXTRA)
 LDFLAGS+=               $(CFLAGS_STD) $(CXXFLAGS_STD) $(LDFLAGS_PKGCONFIG) $(LDFLAGS_$(BUILDENV))  $(LDFLAGS_$(TARGET))        $(CFLAGS_EXTRA) $(LDFLAGS_EXTRA)
 
-# Get BUILDOBJ from the BUILD_OBJECTS environment variable if set
-BUILDOBJ=	$(BUILD_OBJECTS)
-
 ifndef DIR
 # The cd ./ in FULLDIR is for a corner case where . is a symbolic link
 # At least with bash (not sure with other shells), pwd returns me
@@ -44,8 +41,8 @@ DIR:=           $(subst $(BASEDIR),,$(FULLDIR))
 PRETTY_DIR:=    $(subst $(BASEDIR),[top],$(FULLDIR))
 BASENAME_DIR:=  $(shell basename $(FULLDIR))
 BUILD_DATE:=    $(shell /bin/date '+%Y%m%d-%H%M%S')
-OBJROOT:=       $(BUILDOBJ)/$(BUILDENV)/$(CROSS_COMPILE:%=%-)$(TARGET)$(BASE_EXTRA_DEPTH)
-BUILD_LOG:=     $(BUILD_LOGS)build-$(BUILDENV)-$(CROSS_COMPILE:%=%-)$(TARGET)-$(BUILD_DATE).log
+OBJROOT:=       $(OUTPUT)$(BUILDENV)/$(CROSS_COMPILE:%=%-)$(TARGET)$(BASE_EXTRA_DEPTH)
+BUILD_LOG:=     $(LOGS)build-$(BUILDENV)-$(CROSS_COMPILE:%=%-)$(TARGET)-$(BUILD_DATE).log
 endif
 
 # Configuration variables
@@ -134,7 +131,7 @@ clean: hello.clean
 
 distclean: nuke clean
 nuke:
-	-$(PRINT_COMMAND) rm -rf $(BUILDOBJ) $(BUILD_LOGS)build-*.log
+	-$(PRINT_COMMAND) rm -rf $(OUTPUT) $(LOGS)build-*.log
 
 
 help:
@@ -310,7 +307,7 @@ PRINT_PKGCONFIG=$(PRINT_COMMAND) $(INFO) "[PKGCONFIG]" "$*" ;
 PRINT_LIBCONFIG=$(PRINT_COMMAND) $(INFO) "[LIBCONFIG]" "lib$*" ;
 endif
 
-logs.mkdir: $(dir $(BUILD_LOG))/.mkdir $(dir $(BUILD_SAVED_LOG))/.mkdir
+logs.mkdir: $(LOGS).mkdir $(dir $(LAST_LOG))/.mkdir
 %/.mkdir:
 	$(PRINT_COMMAND) $(MAKE_OBJDIR)
 .PRECIOUS: %/.mkdir

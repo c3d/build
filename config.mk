@@ -34,11 +34,11 @@ TARGET?=        opt
 BUILDENV?=auto
 
 # Default location for object files
-BUILD_OBJECTS?= $(BUILD)objects
+OUTPUT?= $(BUILD)objects/
 
 # Default location for build logs
-BUILD_LOGS?=$(BUILD)logs/
-BUILD_SAVED_LOG?=$(BUILD_LOGS)make.log
+LOGS?=$(BUILD)logs/
+LAST_LOG?=$(LOGS)make.log
 
 # Stuff to clean
 GARBAGE=        *~ *.bak
@@ -160,7 +160,7 @@ LOG_COMMANDS=       PRINT_COMMAND="true && " 2>&1              | \
                             `grep -v '^true &&' $(BUILD_LOG)   | \
                              grep -i $(WARNING_MSG)            | \
                              wc -l` Warnings in $(BUILD_LOG);    \
-                    cp $(BUILD_LOG) $(BUILD_SAVED_LOG);          \
+                    cp $(BUILD_LOG) $(LAST_LOG);                 \
                     exit $$RC
 endif
 
