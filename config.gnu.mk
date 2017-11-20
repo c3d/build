@@ -110,3 +110,4 @@ CC_CONFIG=	echo '\#define' HAVE_$(CONFIG_UPPER)_H $(shell $(CC) $(CFLAGS) $(CFLA
 CXX_CONFIG=	echo '\#define' HAVE_$(CONFIG_UPPER) $(shell $(CXX) $(CXXFLAGS) $(CXXFLAGS_CONFIG_$*) $(CONFIG_FLAGS) "$<" -o "$<".exe > "$<".err 2>&1 && "$<".exe > "$<".out && echo 1 || echo 0) | sed -e 's|^\#define \(.*\) 0$$|/* \#undef \1 */|g' > "$@"; [ -f "$<".out ] && cat >> "$@" "$<".out; true
 LIB_CONFIG=	echo '\#define HAVE_LIB'$(CONFIG_UPPER) $$($(CC) $(CCFLAGS) $(CFLAGS_CONFIG_$*) -l$* "$<" -o "$<".exe > "$<".err 2>&1 && "$<".exe && echo 1 || echo 0) | sed -e 's|^\#define \(.*\) 0$$|/* \#undef \1 */|g' > "$@"
 FN_CONFIG=	echo '\#define HAVE_'$(CONFIG_UPPER) $$($(CC) $(CCFLAGS) $(CFLAGS_CONFIG_$*) "$<" -o "$<".exe > "$<".err 2>&1 && "$<".exe > "$<".out && echo 1 || echo 0) | sed -e 's|^\#define \(.*\) 0$$|/* \#undef \1 */|g' > "$@"; [ -f "$<".out ] && cat >> "$@" "$<".out; true
+MAKE_CONFIG=	sed -e 's|^\#define \(.*\) \(.*\)$$|\1=\2|g' -e 's|.*undef.*||g' < "$<" > "$@"
