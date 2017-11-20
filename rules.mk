@@ -401,6 +401,10 @@ ORIG_TARGET=$(subst .lt.,<,$(subst .gt.,>,$(subst .sl.,/,$*)))
 config.h: $(NORM_CONFIG:%=$(OBJDIR)/HAVE_%)
 	$(PRINT_GENERATE) cat $^ > $@
 
+$(OBJDIR)/HAVE_%.mk: $(OBJDIR)/HAVE_% $(MAKEFILE_DEPS)
+	$(PRINT_GENERATE) $(MAKE_CONFIG)
+-include $(NORM_CONFIG:%=$(OBJDIR)/HAVE_%.mk)
+
 # C standard headers, e.g. HAVE_<stdio.h>
 $(OBJDIR)/HAVE_.lt.%.h.gt.: $(OBJDIR)/CONFIG_HAVE_%.c	$(MAKEFILE_DEPS)
 	$(PRINT_CONFIG) $(CC_CONFIG)
