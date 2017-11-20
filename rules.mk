@@ -39,7 +39,6 @@ BASEDIR:=       $(realpath $(BUILD)..)
 FULLDIR:=       $(abspath .)
 DIR:=           $(subst $(BASEDIR),,$(FULLDIR))
 PRETTY_DIR:=    $(subst $(BASEDIR),[top],$(FULLDIR))
-BASENAME_DIR:=  $(shell basename $(FULLDIR))
 BUILD_DATE:=    $(shell /bin/date '+%Y%m%d-%H%M%S')
 OBJROOT:=       $(OUTPUT)$(BUILDENV)/$(CROSS_COMPILE:%=%-)$(TARGET)$(BASE_EXTRA_DEPTH)
 BUILD_LOG:=     $(LOGS)build-$(BUILDENV)-$(CROSS_COMPILE:%=%-)$(TARGET)-$(BUILD_DATE).log
