@@ -380,7 +380,7 @@ endif
 # since we don't have proper dependency between independent
 # libraries and we may otherwise end up building the same
 # library multiple times "in parallel" (wasting energy)
-ifdef SUBDIRS
+ifneq ($(SUBDIRS)$(VARIANTS),)
 $(NOT_PARALLEL):
 endif
 
