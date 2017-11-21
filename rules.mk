@@ -47,15 +47,15 @@ endif
 # Configuration variables
 OBJDIR:=        $(OBJROOT)$(DIR)
 OBJECTS=        $(SOURCES:%=$(OBJDIR)/%$(OBJ_EXT))
-PRODUCTS_EXE:=  $(patsubst %.exe,%$(EXE_EXT),$(filter %.exe,$(PRODUCTS)))
-PRODUCTS_LIB:=  $(patsubst %.lib,%$(LIB_EXT),$(filter %.lib,$(PRODUCTS)))
-PRODUCTS_DLL:=  $(patsubst %.dll,%$(DLL_EXT),$(filter %.dll,$(PRODUCTS)))
-PRODUCTS_OTHER:=$(filter-out %.exe %.lib %.dll %$(EXE_EXT) %$(LIB_EXT) %$(DLL_EXT), $(PRODUCTS))
-OBJROOT_EXE:=   $(PRODUCTS_EXE:%=$(OBJROOT)/$(EXE_PFX)%)
-OBJROOT_LIB:=   $(PRODUCTS_LIB:%=$(OBJROOT)/$(LIB_PFX)%)
-OBJROOT_DLL:=   $(PRODUCTS_DLL:%=$(OBJROOT)/$(DLL_PFX)%)
-OBJROOT_OTHER:= $(PRODUCTS_OTHER:%=$(OBJROOT)/%)
-OBJPRODUCTS:=   $(OBJROOT_EXE) $(OBJROOT_LIB) $(OBJROOT_DLL) $(OBJROOT_OTHER)
+PRODUCTS_EXE=   $(patsubst %.exe,%$(EXE_EXT),$(filter %.exe,$(PRODUCTS)))
+PRODUCTS_LIB=   $(patsubst %.lib,%$(LIB_EXT),$(filter %.lib,$(PRODUCTS)))
+PRODUCTS_DLL=   $(patsubst %.dll,%$(DLL_EXT),$(filter %.dll,$(PRODUCTS)))
+PRODUCTS_OTHER= $(filter-out %.exe %.lib %.dll %$(EXE_EXT) %$(LIB_EXT) %$(DLL_EXT), $(PRODUCTS))
+OBJROOT_EXE=    $(PRODUCTS_EXE:%=$(OBJROOT)/$(EXE_PFX)%)
+OBJROOT_LIB=    $(PRODUCTS_LIB:%=$(OBJROOT)/$(LIB_PFX)%)
+OBJROOT_DLL=    $(PRODUCTS_DLL:%=$(OBJROOT)/$(DLL_PFX)%)
+OBJROOT_OTHER=  $(PRODUCTS_OTHER:%=$(OBJROOT)/%)
+OBJPRODUCTS=    $(OBJROOT_EXE) $(OBJROOT_LIB) $(OBJROOT_DLL) $(OBJROOT_OTHER)
 
 # Check a common mistake with PRODUCTS= not being set or set without extension
 # Even on Linux / Unix, the PRODUCTS variable must end in .exe for executables,
@@ -69,16 +69,16 @@ $(error Error: Variable PRODUCTS must end in .exe, .lib or .dll)
 endif
 endif
 
-LIBNAMES:=      $(filter %.lib, $(notdir $(LIBRARIES)))
-DLLNAMES:=      $(filter %.dll, $(notdir $(LIBRARIES)))
-OBJLIBS:=	$(LIBNAMES:%.lib=$(OBJROOT)/$(LIB_PFX)%$(LIB_EXT))
-OBJDLLS:=       $(DLLNAMES:%.dll=$(OBJROOT)/$(DLL_PFX)%$(DLL_EXT))
+LIBNAMES=       $(filter %.lib, $(notdir $(LIBRARIES)))
+DLLNAMES=       $(filter %.dll, $(notdir $(LIBRARIES)))
+OBJLIBS= 	$(LIBNAMES:%.lib=$(OBJROOT)/$(LIB_PFX)%$(LIB_EXT))
+OBJDLLS=        $(DLLNAMES:%.dll=$(OBJROOT)/$(DLL_PFX)%$(DLL_EXT))
 LINK_PATHS:=	$(OBJROOT:%=$(LINK_DIR_OPT)%)
-LINK_LIBS:=	$(LINK_LIBS)				\
+LINK_XLIBS=	$(LINK_LIBS)				\
 		$(LIBNAMES:%.lib=$(LINK_LIB_OPT)%)	\
 		$(DLLNAMES:%.dll=$(LINK_DLL_OPT)%)
-LINK_INPUTS:=   $(OBJECTS) $(OBJLIBS) $(OBJDLLS)
-LINK_CMDLINE:=	$(OBJECTS) $(LINK_PATHS) $(LINK_LIBS)
+LINK_INPUTS=    $(OBJECTS) $(OBJLIBS) $(OBJDLLS)
+LINK_CMDLINE= 	$(OBJECTS) $(LINK_PATHS) $(LINK_XLIBS)
 ifneq ($(words $(LINK_INPUTS)),0)
 LINK_WINPUTS=   $(patsubst %,"%", $(shell cygpath -aw $(LINK_INPUTS)))
 endif
@@ -366,11 +366,12 @@ $(OBJDIR)/%.cpp$(OBJ_EXT): %.cpp 		$(OBJ_DEPS)
 $(OBJDIR)/%.s$(OBJ_EXT): %.s 			$(OBJ_DEPS)
 	$(PRINT_COMPILE) $(MAKE_AS)
 
-$(OBJROOT_LIB): $(LINK_INPUTS)			 		$(MAKEFILE_DEPS)
+.SECONDEXPANSION:
+$(OBJROOT_LIB): $(LINK_INPUTS) $$(LINK_INPUTS)	 		$(MAKEFILE_DEPS)
 	$(PRINT_BUILD) $(MAKE_LIB)
-$(OBJROOT_DLL): $(LINK_INPUTS)					$(MAKEFILE_DEPS)
+$(OBJROOT_DLL): $(LINK_INPUTS) $$(LINK_INPUTS)			$(MAKEFILE_DEPS)
 	$(PRINT_BUILD) $(MAKE_DLL)
-$(OBJROOT_EXE): $(LINK_INPUTS)					$(MAKEFILE_DEPS)
+$(OBJROOT_EXE): $(LINK_INPUTS) $$(LINK_INPUTS)			$(MAKEFILE_DEPS)
 	$(PRINT_BUILD) $(MAKE_EXE)
 
 endif
