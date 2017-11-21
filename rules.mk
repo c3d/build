@@ -431,9 +431,9 @@ $(OBJDIR)/CONFIG_LIB%.c: $(OBJDIR)/.mkdir		$(CONFIG_DEPS)
 $(OBJDIR)/HAVE_%: $(OBJDIR)/CONFIG_CHECK_%.c		$(CONFIG_DEPS)
 	$(PRINT_CONFIG)	$(FN_CONFIG)
 $(OBJDIR)/CONFIG_CHECK_%.c: $(BUILD)config/check_%.c 	$(CONFIG_DEPS)
-	$(PRINT_COPY) cp $< $@
+	$(PRINT_COMMAND) cp $< $@
 $(OBJDIR)/CONFIG_CHECK_%.c: config/check_%.c		$(CONFIG_DEPS)
-	$(PRINT_COPY) cp $< $@
+	$(PRINT_COMMAND) cp $< $@
 .PRECIOUS: $(OBJDIR)/CONFIG_CHECK_%.c
 
 
