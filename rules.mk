@@ -400,42 +400,46 @@ ORIG_TARGET=$(subst .lt.,<,$(subst .gt.,>,$(subst .sl.,/,$*)))
 CONFIG_DEPS=	$(MAKEFILE_DEPS) $(OBJDIR)/.mkdir			\
 		$(PKGCONFIGS:%=$(OBJROOT)/%.pkg-config.mk)
 
-config.h: $(NORM_CONFIG:%=$(OBJDIR)/HAVE_%) prebuild
+config.h: $(NORM_CONFIG:%=$(OBJDIR)/CFG_HAVE_%.h)
 	$(PRINT_GENERATE) cat $^ > $@
 
-$(OBJDIR)/HAVE_%.mk: $(OBJDIR)/HAVE_% $(MAKEFILE_DEPS)
+$(OBJDIR)/CFG_HAVE_%.mk: $(OBJDIR)/CFG_HAVE_%.h 		$(MAKEFILE_DEPS)
 	$(PRINT_COMMAND) $(MAKE_CONFIG)
--include $(NORM_CONFIG:%=$(OBJDIR)/HAVE_%.mk)
+-include $(NORM_CONFIG:%=$(OBJDIR)/CFG_HAVE_%.mk)
 
 # C standard headers, e.g. HAVE_<stdio.h>
-$(OBJDIR)/HAVE_.lt.%.h.gt.: $(OBJDIR)/CONFIG_HAVE_%.c	$(CONFIG_DEPS)
+$(OBJDIR)/CFG_HAVE_.lt.%.h.gt..h: $(OBJDIR)/CFG-CH_HAVE_%.c	$(CONFIG_DEPS)
 	$(PRINT_CONFIG) $(CC_CONFIG)
-$(OBJDIR)/CONFIG_HAVE_%.c: $(OBJDIR)/.mkdir		$(CONFIG_DEPS)
+$(OBJDIR)/CFG-CH_HAVE_%.c: $(OBJDIR)/.mkdir			$(CONFIG_DEPS)
 	$(PRINT_COMMAND) echo '#include' "<$(ORIG_TARGET).h>" > "$@"; echo 'int main() { return 0; }' >> "$@"
-.PRECIOUS: $(OBJDIR)/CONFIG_HAVE_%.c
+.PRECIOUS: $(OBJDIR)/CFG-CH_HAVE_%.c
 
 # C++ Standard headers, e.g. HAVE_<iostream>
-$(OBJDIR)/HAVE_.lt.%.gt.: $(OBJDIR)/CONFIG_HAVE_%.cpp	$(CONFIG_DEPS)
+$(OBJDIR)/CFG_HAVE_.lt.%.gt..h: $(OBJDIR)/CFG-C++H_HAVE_%.cpp	$(CONFIG_DEPS)
 	$(PRINT_CONFIG) $(CXX_CONFIG)
-$(OBJDIR)/CONFIG_HAVE_%.cpp: $(OBJDIR)/.mkdir		$(CONFIG_DEPS)
+$(OBJDIR)/CFG-C++H_HAVE_%.cpp: $(OBJDIR)/.mkdir			$(CONFIG_DEPS)
 	$(PRINT_COMMAND) echo '#include' "<$(ORIG_TARGET)>" > "$@"; echo 'int main() { return 0; }' >> "$@"
-.PRECIOUS: $(OBJDIR)/CONFIG_HAVE_%.cpp
+.PRECIOUS: $(OBJDIR)/CFG-C++H_HAVE_%.cpp
 
 # Library
-$(OBJDIR)/HAVE_lib%: $(OBJDIR)/CONFIG_LIB%.c		$(CONFIG_DEPS)
+$(OBJDIR)/CFG_HAVE_lib%.h: $(OBJDIR)/CFG-LIB_HAVE_lib%.c	$(CONFIG_DEPS)
 	$(PRINT_LIBCONFIG) $(LIB_CONFIG)
-$(OBJDIR)/CONFIG_LIB%.c: $(OBJDIR)/.mkdir		$(CONFIG_DEPS)
+$(OBJDIR)/CFG-LIB_HAVE_lib%.c: $(OBJDIR)/.mkdir			$(CONFIG_DEPS)
 	$(PRINT_COMMAND) echo 'int main() { return 0; }' > "$@"
-.PRECIOUS: $(OBJDIR)/CONFIG_LIB%.c
+.PRECIOUS: $(OBJDIR)/CFG-LIB_HAVE_lib%.c
 
 # Check if a function is present
-$(OBJDIR)/HAVE_%: $(OBJDIR)/CONFIG_CHECK_%.c		$(CONFIG_DEPS)
+$(OBJDIR)/CFG_HAVE_%.h: $(OBJDIR)/CFG-FN_HAVE_%.c		$(CONFIG_DEPS)
 	$(PRINT_CONFIG)	$(FN_CONFIG)
-$(OBJDIR)/CONFIG_CHECK_%.c: $(BUILD)config/check_%.c 	$(CONFIG_DEPS)
+$(OBJDIR)/CFG-FN_HAVE_%.c: $(BUILD)config/HAVE_%.c 		$(CONFIG_DEPS)
 	$(PRINT_COMMAND) cp $< $@
-$(OBJDIR)/CONFIG_CHECK_%.c: config/check_%.c		$(CONFIG_DEPS)
+$(OBJDIR)/CFG-FN_HAVE_%.c: config/HAVE_%.c			$(CONFIG_DEPS)
 	$(PRINT_COMMAND) cp $< $@
-.PRECIOUS: $(OBJDIR)/CONFIG_CHECK_%.c
+$(OBJDIR)/CFG-FN_HAVE_%.c: $(BUILD)config/check_%.c 		$(CONFIG_DEPS)
+	$(PRINT_COMMAND) cp $< $@
+$(OBJDIR)/CFG-FN_HAVE_%.c: config/check_%.c			$(CONFIG_DEPS)
+	$(PRINT_COMMAND) cp $< $@
+.PRECIOUS: $(OBJDIR)/CFG-FN_HAVE_%.c
 
 
 
