@@ -408,21 +408,21 @@ $(OBJDIR)/HAVE_%.mk: $(OBJDIR)/HAVE_% $(MAKEFILE_DEPS)
 $(OBJDIR)/HAVE_.lt.%.h.gt.: $(OBJDIR)/CONFIG_HAVE_%.c	$(MAKEFILE_DEPS)
 	$(PRINT_CONFIG) $(CC_CONFIG)
 $(OBJDIR)/CONFIG_HAVE_%.c: $(OBJDIR)/.mkdir		$(MAKEFILE_DEPS)
-	$(PRINT_GENERATE) echo '#include' "<$(ORIG_TARGET).h>" > "$@"; echo 'int main() { return 0; }' >> "$@"
+	$(PRINT_COMMAND) echo '#include' "<$(ORIG_TARGET).h>" > "$@"; echo 'int main() { return 0; }' >> "$@"
 .PRECIOUS: $(OBJDIR)/CONFIG_HAVE_%.c
 
 # C++ Standard headers, e.g. HAVE_<iostream>
 $(OBJDIR)/HAVE_.lt.%.gt.: $(OBJDIR)/CONFIG_HAVE_%.cpp	$(MAKEFILE_DEPS)
 	$(PRINT_CONFIG) $(CXX_CONFIG)
 $(OBJDIR)/CONFIG_HAVE_%.cpp: $(OBJDIR)/.mkdir		$(MAKEFILE_DEPS)
-	$(PRINT_GENERATE) echo '#include' "<$(ORIG_TARGET)>" > "$@"; echo 'int main() { return 0; }' >> "$@"
+	$(PRINT_COMMAND) echo '#include' "<$(ORIG_TARGET)>" > "$@"; echo 'int main() { return 0; }' >> "$@"
 .PRECIOUS: $(OBJDIR)/CONFIG_HAVE_%.cpp
 
 # Library
 $(OBJDIR)/HAVE_lib%: $(OBJDIR)/CONFIG_LIB%.c		$(MAKEFILE_DEPS)
 	$(PRINT_LIBCONFIG) $(LIB_CONFIG)
 $(OBJDIR)/CONFIG_LIB%.c: $(OBJDIR)/.mkdir		$(MAKEFILE_DEPS)
-	$(PRINT_GENERATE) echo 'int main() { return 0; }' > "$@"
+	$(PRINT_COMMAND) echo 'int main() { return 0; }' > "$@"
 .PRECIOUS: $(OBJDIR)/CONFIG_LIB%.c
 
 # Check if a function is present
