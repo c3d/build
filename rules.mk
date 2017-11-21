@@ -344,11 +344,11 @@ OBJ_DEPS=$(OBJDIR_DEPS) $(MAKEFILE_DEPS)  hello prebuild
 endif
 
 ifndef DEPFLAGS
-$(OBJDIR)/%.c$(OBJ_EXT).d:		%.c		$(OBJ_DEPS)
+$(OBJDIR)/%.c$(OBJ_EXT).d:		%.c			$(OBJ_DEPS)
 	$(PRINT_DEPEND) ( $(CC_DEPEND)
-$(OBJDIR)/%.cpp$(OBJ_EXT).d:	%.cpp	$(OBJ_DEPS)
+$(OBJDIR)/%.cpp$(OBJ_EXT).d:		%.cpp			$(OBJ_DEPS)
 	$(PRINT_DEPEND) ( $(CXX_DEPEND)
-$(OBJDIR)/%.s$(OBJ_EXT).d: 		%.s		$(OBJ_DEPS)
+$(OBJDIR)/%.s$(OBJ_EXT).d: 		%.s			$(OBJ_DEPS)
 	$(PRINT_DEPEND) ( $(AS_DEPEND)
 else
 $(OBJDIR)/%$(OBJ_EXT).d: $(OBJDIR)/%$(OBJ_EXT)
@@ -359,11 +359,11 @@ endif
 #  Inference rules
 #------------------------------------------------------------------------------
 
-$(OBJDIR)/%.c$(OBJ_EXT): %.c 			$(OBJ_DEPS)
+$(OBJDIR)/%.c$(OBJ_EXT): %.c 					$(OBJ_DEPS)
 	$(PRINT_COMPILE) $(MAKE_CC)
-$(OBJDIR)/%.cpp$(OBJ_EXT): %.cpp 		$(OBJ_DEPS)
+$(OBJDIR)/%.cpp$(OBJ_EXT): %.cpp 				$(OBJ_DEPS)
 	$(PRINT_COMPILE) $(MAKE_CXX)
-$(OBJDIR)/%.s$(OBJ_EXT): %.s 			$(OBJ_DEPS)
+$(OBJDIR)/%.s$(OBJ_EXT): %.s 					$(OBJ_DEPS)
 	$(PRINT_COMPILE) $(MAKE_AS)
 
 .SECONDEXPANSION:
