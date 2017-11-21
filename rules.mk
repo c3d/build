@@ -400,7 +400,7 @@ ORIG_TARGET=$(subst .lt.,<,$(subst .gt.,>,$(subst .sl.,/,$*)))
 CONFIG_DEPS=	$(MAKEFILE_DEPS) $(OBJDIR)/.mkdir			\
 		$(PKGCONFIGS:%=$(OBJROOT)/%.pkg-config.mk)
 
-config.h: $(NORM_CONFIG:%=$(OBJDIR)/HAVE_%)
+config.h: $(NORM_CONFIG:%=$(OBJDIR)/HAVE_%) prebuild
 	$(PRINT_GENERATE) cat $^ > $@
 
 $(OBJDIR)/HAVE_%.mk: $(OBJDIR)/HAVE_% $(MAKEFILE_DEPS)
