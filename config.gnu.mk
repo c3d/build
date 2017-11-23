@@ -114,10 +114,10 @@ CFG_UNDEF0=								\
 	| sed -e 's|^\#define \(.*\) 0$$|/* \#undef \1 */|g' > "$@";	\
 	[ -f "$<".out ] && cat >> "$@" "$<".out; true
 
-CFG_CC_CMD=	$(shell $(CC)  $(CFLAGS)   $(CFLAGS_CONFIG_$*)   $(CFG_TEST))
-CFG_CXX_CMD=	$(shell $(CXX) $(CXXFLAGS) $(CXXFLAGS_CONFIG_$*) $(CFG_TEST))
-CFG_LIB_CMD=	$(shell $(CC) $(CFLAGS) $(CFLAGS_CONFIG_$*) -l$* $(CFG_TEST))
-CFG_FN_CMD=	$(shell $(CC) $(CFLAGS) $(CFLAGS_CONFIG_$*)      $(CFG_TEST))
+CFG_CC_CMD=	$$($(CC)  $(CFLAGS)   $(CFLAGS_CONFIG_$*)   $(LDFLAGS)      $(CFG_TEST))
+CFG_CXX_CMD=	$$($(CXX) $(CXXFLAGS) $(CXXFLAGS_CONFIG_$*) $(LDFLAGS)      $(CFG_TEST))
+CFG_LIB_CMD=	$$($(CC)  $(CFLAGS)   $(CFLAGS_CONFIG_$*)   $(LDFLAGS) -l$* $(CFG_TEST))
+CFG_FN_CMD=	$$($(CC)  $(CFLAGS)   $(CFLAGS_CONFIG_$*)   $(LDFLAGS)      $(CFG_TEST))
 
 CC_CONFIG=	$(CFG_DEF) HAVE_$(CFG_UPPER)_H  $(CFG_CC_CMD)  $(CFG_UNDEF0)
 CXX_CONFIG=	$(CFG_DEF) HAVE_$(CFG_UPPER)    $(CFG_CXX_CMD) $(CFG_UNDEF0)
