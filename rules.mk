@@ -212,7 +212,7 @@ product.test: product .ALWAYS
 # Check pkg-config
 $(OBJROOT)/%.pkg-config.mk: $(MAKEFILE_DEPS) $(OBJROOT)/.mkdir
 	$(PRINT_PKGCONFIG) pkg-config $*
-	$(PRINT_COMMAND)  echo CFLAGS_PKGCONFIG+=`pkg-config --cflags $*` > $@ && echo LDFLAGS_PKGCONFIG+=`pkg-config --libs $*` >> $@
+	$(PRINT_COMMAND)  (echo CFLAGS_PKGCONFIG+=`pkg-config --cflags $*` && echo LDFLAGS_PKGCONFIG+=`pkg-config --libs $*`) > $@
 
 # Benchmarking (always done with profile target)
 benchmark:	$(BENCHMARK:%=%.benchmark) $(BENCHMARKS:%=%.benchmark)
@@ -411,14 +411,14 @@ $(OBJDIR)/CFG_HAVE_%.mk: $(OBJDIR)/CFG_HAVE_%.h 		$(MAKEFILE_DEPS)
 $(OBJDIR)/CFG_HAVE_.lt.%.h.gt..h: $(OBJDIR)/CFG-CH_HAVE_%.c	$(CONFIG_DEPS)
 	$(PRINT_CONFIG) $(CC_CONFIG)
 $(OBJDIR)/CFG-CH_HAVE_%.c: $(OBJDIR)/.mkdir			$(CONFIG_DEPS)
-	$(PRINT_COMMAND) echo '#include' "<$(ORIG_TARGET).h>" > "$@"; echo 'int main() { return 0; }' >> "$@"
+	$(PRINT_COMMAND) (echo '#include' "<$(ORIG_TARGET).h>" && echo 'int main() { return 0; }') > "$@"
 .PRECIOUS: $(OBJDIR)/CFG-CH_HAVE_%.c
 
 # C++ Standard headers, e.g. HAVE_<iostream>
 $(OBJDIR)/CFG_HAVE_.lt.%.gt..h: $(OBJDIR)/CFG-C++H_HAVE_%.cpp	$(CONFIG_DEPS)
 	$(PRINT_CONFIG) $(CXX_CONFIG)
 $(OBJDIR)/CFG-C++H_HAVE_%.cpp: $(OBJDIR)/.mkdir			$(CONFIG_DEPS)
-	$(PRINT_COMMAND) echo '#include' "<$(ORIG_TARGET)>" > "$@"; echo 'int main() { return 0; }' >> "$@"
+	$(PRINT_COMMAND) (echo '#include' "<$(ORIG_TARGET)>" && echo 'int main() { return 0; }') > "$@"
 .PRECIOUS: $(OBJDIR)/CFG-C++H_HAVE_%.cpp
 
 # Library
@@ -440,7 +440,6 @@ $(OBJDIR)/CFG-FN_HAVE_%.c: $(BUILD)config/check_%.c 		$(CONFIG_DEPS)
 $(OBJDIR)/CFG-FN_HAVE_%.c: config/check_%.c			$(CONFIG_DEPS)
 	$(PRINT_COMMAND) cp $< $@
 .PRECIOUS: $(OBJDIR)/CFG-FN_HAVE_%.c
-
 
 
 #------------------------------------------------------------------------------
