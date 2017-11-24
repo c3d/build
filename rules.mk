@@ -393,27 +393,27 @@ endif
 #------------------------------------------------------------------------------
 
 # Package configuration file
-PKG_CFLAGS= 	$(PKGCONFIGS:%=$(OBJROOT)/%.pkg-config.cflags)
-PKG_LDFLAGS=	$(PKGCONFIGS:%=$(OBJROOT)/%.pkg-config.ldflags)
+PKG_CFLAGS= 	$(PKGCONFIGS:%=$(OBJDIR)/%.pkg-config.cflags)
+PKG_LDFLAGS=	$(PKGCONFIGS:%=$(OBJDIR)/%.pkg-config.ldflags)
 CONFIG_LIBS=
-PKG_LIBS=	$(patsubst %,$(OBJROOT)/%.cfg.ldflags,$(filter lib%,$(CONFIG)))
+PKG_LIBS=	$(patsubst %,$(OBJDIR)/%.cfg.ldflags,$(filter lib%,$(CONFIG)))
 
 PKG_DEPS=	$(MAKEFILE_DEPS) $(OBJDIR)/.mkdir
 
-$(OBJROOT)/pkg-config.mk: $(PKG_CFLAGS) $(PKG_LDFLAGS) $(PKG_LIBS)
+$(OBJDIR)/pkg-config.mk: $(PKG_CFLAGS) $(PKG_LDFLAGS) $(PKG_LIBS)
 	$(PRINT_COMMAND) (echo CFLAGS_PKGCONFIG=`cat $(PKG_CFLAGS)`; echo LDFLAGS_PKGCONFIG=`cat $(PKG_LDFLAGS) $(PKG_LIBS)`) > $@
--include $(PKGCONFIGS:%=$(OBJROOT)/pkg-config.mk)
+-include $(PKGCONFIGS:%=$(OBJDIR)/pkg-config.mk)
 
-$(OBJROOT)/%?.pkg-config.cflags: 				$(PKG_DEPS)
+$(OBJDIR)/%?.pkg-config.cflags: 				$(PKG_DEPS)
 	$(PRINT_PKGCONFIG)  (pkg-config --cflags $* --silence-errors || true) > $@
-$(OBJROOT)/%?.pkg-config.ldflags: 				$(PKG_DEPS)
+$(OBJDIR)/%?.pkg-config.ldflags: 				$(PKG_DEPS)
 	$(PRINT_COMMAND)  (pkg-config --libs $* --silence-errors || true) > $@
 
-$(OBJROOT)/%.pkg-config.cflags: 				$(PKG_DEPS)
+$(OBJDIR)/%.pkg-config.cflags: 					$(PKG_DEPS)
 	$(PRINT_PKGCONFIG)  pkg-config --cflags $* > $@
-$(OBJROOT)/%.pkg-config.ldflags: 				$(PKG_DEPS)
+$(OBJDIR)/%.pkg-config.ldflags: 				$(PKG_DEPS)
 	$(PRINT_COMMAND)  pkg-config --libs $* > $@
-$(OBJROOT)/lib%.cfg.ldflags: $(OBJDIR)/CFG_HAVE_lib%.h		$(PKG_DEPS)
+$(OBJDIR)/lib%.cfg.ldflags: $(OBJDIR)/CFG_HAVE_lib%.h		$(PKG_DEPS)
 	$(PRINT_COMMAND)  (grep -q 'define ' $< && echo $(LINK_CFG_OPT)$* || true) > $@
 
 
@@ -424,7 +424,7 @@ $(OBJROOT)/lib%.cfg.ldflags: $(OBJDIR)/CFG_HAVE_lib%.h		$(PKG_DEPS)
 NORM_CONFIG=$(subst <,.lt.,$(subst >,.gt.,$(subst /,.sl.,$(CONFIG))))
 ORIG_TARGET=$(subst .lt.,<,$(subst .gt.,>,$(subst .sl.,/,$*)))
 CONFIG_DEPS=	$(MAKEFILE_DEPS) $(OBJDIR)/.mkdir			\
-		$(PKGCONFIGS:%=$(OBJROOT)/pkg-config.mk)
+		$(PKGCONFIGS:%=$(OBJDIR)/pkg-config.mk)
 
 config.h: $(NORM_CONFIG:%=$(OBJDIR)/CFG_HAVE_%.h)
 	$(PRINT_GENERATE) cat $^ > $@
