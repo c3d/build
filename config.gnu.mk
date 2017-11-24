@@ -41,8 +41,8 @@ INSTALL=	install
 #  Compilation flags
 #------------------------------------------------------------------------------
 
-CFLAGS_STD=$(CC_STD:%=-std=%)
-CXXFLAGS_STD=$(CXX_STD:%=-std=%)
+CFLAGS_STD=	$(CC_STD:%=-std=%)	-fPIC
+CXXFLAGS_STD=	$(CXX_STD:%=-std=%)	-fPIC
 
 CFLAGS_debug=   -g -Wall -fno-inline
 CFLAGS_opt=     -g -O3 -Wall
