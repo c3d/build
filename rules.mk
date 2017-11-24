@@ -393,6 +393,11 @@ $(OBJROOT)/pkg-config.mk: $(PKG_CFLAGS) $(PKG_LDFLAGS)
 	$(PRINT_COMMAND) (echo CFLAGS_PKGCONFIG=`cat $(PKG_CFLAGS)`; echo LDFLAGS_PKGCONFIG=`cat $(PKG_LDFLAGS)`) > $@
 -include $(PKGCONFIGS:%=$(OBJROOT)/pkg-config.mk)
 
+$(OBJROOT)/%?.pkg-config.cflags: $(MAKEFILE_DEPS) $(OBJROOT)/.mkdir
+	$(PRINT_PKGCONFIG)  (pkg-config --cflags $* --silence-errors || true) > $@
+$(OBJROOT)/%?.pkg-config.ldflags: $(MAKEFILE_DEPS) $(OBJROOT)/.mkdir
+	$(PRINT_COMMAND)  (pkg-config --libs $* --silence-errors || true) > $@
+
 $(OBJROOT)/%.pkg-config.cflags: $(MAKEFILE_DEPS) $(OBJROOT)/.mkdir
 	$(PRINT_PKGCONFIG)  pkg-config --cflags $* > $@
 $(OBJROOT)/%.pkg-config.ldflags: $(MAKEFILE_DEPS) $(OBJROOT)/.mkdir
