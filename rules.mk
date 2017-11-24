@@ -177,8 +177,9 @@ endif
 config: hello
 config: $(CONFIG:%=config.h)
 config: $(NORM_CONFIG:%=$(OBJDIR)/CFG_HAVE_%.mk)
-libraries: $(OBJLIBS) $(OBJDLLS) config
-libraries: $(VARIANTS:%=%.variant)
+config: $(VARIANTS:%=%.variant)
+libraries: config
+libraries: $(OBJLIBS) $(OBJDLLS)
 prebuild: config
 recurse: prebuild
 objects: prebuild
