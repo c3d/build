@@ -69,13 +69,13 @@ $(error Error: Variable PRODUCTS must end in .exe, .lib or .dll)
 endif
 endif
 
-LIBNAMES=       $(filter %.lib, $(notdir $(LIBRARIES)))
-DLLNAMES=       $(filter %.dll, $(notdir $(LIBRARIES)))
+ALL_LIBS=	$(LIBRARIES) $(LINK_LIBS)
+LIBNAMES=       $(filter %.lib, $(notdir $(ALL_LIBS)))
+DLLNAMES=       $(filter %.dll, $(notdir $(ALL_LIBS)))
 OBJLIBS= 	$(LIBNAMES:%.lib=$(OBJROOT)/$(LIB_PFX)%$(LIB_EXT))
 OBJDLLS=        $(DLLNAMES:%.dll=$(OBJROOT)/$(DLL_PFX)%$(DLL_EXT))
 LINK_PATHS:=	$(OBJROOT:%=$(LINK_DIR_OPT)%)
-LINK_XLIBS=	$(LINK_LIBS)				\
-		$(LIBNAMES:%.lib=$(LINK_LIB_OPT)%)	\
+LINK_XLIBS=	$(LIBNAMES:%.lib=$(LINK_LIB_OPT)%)	\
 		$(DLLNAMES:%.dll=$(LINK_DLL_OPT)%)
 LINK_INPUTS=    $(OBJECTS) $(OBJLIBS) $(OBJDLLS)
 LINK_CMDLINE= 	$(OBJECTS) $(LINK_PATHS) $(LINK_XLIBS)
@@ -393,21 +393,28 @@ endif
 #------------------------------------------------------------------------------
 
 # Package configuration file
-PKG_CFLAGS=$(PKGCONFIGS:%=$(OBJROOT)/%.pkg-config.cflags)
-PKG_LDFLAGS=$(PKGCONFIGS:%=$(OBJROOT)/%.pkg-config.ldflags)
-$(OBJROOT)/pkg-config.mk: $(PKG_CFLAGS) $(PKG_LDFLAGS)
-	$(PRINT_COMMAND) (echo CFLAGS_PKGCONFIG=`cat $(PKG_CFLAGS)`; echo LDFLAGS_PKGCONFIG=`cat $(PKG_LDFLAGS)`) > $@
+PKG_CFLAGS= 	$(PKGCONFIGS:%=$(OBJROOT)/%.pkg-config.cflags)
+PKG_LDFLAGS=	$(PKGCONFIGS:%=$(OBJROOT)/%.pkg-config.ldflags)
+CONFIG_LIBS=
+PKG_LIBS=	$(patsubst %,$(OBJROOT)/%.cfg.ldflags,$(filter lib%,$(CONFIG)))
+
+PKG_DEPS=	$(MAKEFILE_DEPS) $(OBJDIR)/.mkdir
+
+$(OBJROOT)/pkg-config.mk: $(PKG_CFLAGS) $(PKG_LDFLAGS) $(PKG_LIBS)
+	$(PRINT_COMMAND) (echo CFLAGS_PKGCONFIG=`cat $(PKG_CFLAGS)`; echo LDFLAGS_PKGCONFIG=`cat $(PKG_LDFLAGS) $(PKG_LIBS)`) > $@
 -include $(PKGCONFIGS:%=$(OBJROOT)/pkg-config.mk)
 
-$(OBJROOT)/%?.pkg-config.cflags: $(MAKEFILE_DEPS) $(OBJROOT)/.mkdir
+$(OBJROOT)/%?.pkg-config.cflags: 				$(PKG_DEPS)
 	$(PRINT_PKGCONFIG)  (pkg-config --cflags $* --silence-errors || true) > $@
-$(OBJROOT)/%?.pkg-config.ldflags: $(MAKEFILE_DEPS) $(OBJROOT)/.mkdir
+$(OBJROOT)/%?.pkg-config.ldflags: 				$(PKG_DEPS)
 	$(PRINT_COMMAND)  (pkg-config --libs $* --silence-errors || true) > $@
 
-$(OBJROOT)/%.pkg-config.cflags: $(MAKEFILE_DEPS) $(OBJROOT)/.mkdir
+$(OBJROOT)/%.pkg-config.cflags: 				$(PKG_DEPS)
 	$(PRINT_PKGCONFIG)  pkg-config --cflags $* > $@
-$(OBJROOT)/%.pkg-config.ldflags: $(MAKEFILE_DEPS) $(OBJROOT)/.mkdir
+$(OBJROOT)/%.pkg-config.ldflags: 				$(PKG_DEPS)
 	$(PRINT_COMMAND)  pkg-config --libs $* > $@
+$(OBJROOT)/lib%.cfg.ldflags: $(OBJDIR)/CFG_HAVE_lib%.h		$(PKG_DEPS)
+	$(PRINT_COMMAND)  (grep -q 'define ' $< && echo $(LINK_CFG_OPT)$* || true) > $@
 
 
 #------------------------------------------------------------------------------
@@ -441,9 +448,9 @@ $(OBJDIR)/CFG-C++H_HAVE_%.cpp: $(OBJDIR)/.mkdir			$(CONFIG_DEPS)
 .PRECIOUS: $(OBJDIR)/CFG-C++H_HAVE_%.cpp
 
 # Library
-$(OBJDIR)/CFG_HAVE_lib%.h: $(OBJDIR)/CFG-LIB_HAVE_lib%.c	$(CONFIG_DEPS)
+$(OBJDIR)/CFG_HAVE_lib%.h: $(OBJDIR)/CFG-LIB_HAVE_lib%.c	$(PKG_DEPS)
 	$(PRINT_LIBCONFIG) $(LIB_CONFIG)
-$(OBJDIR)/CFG-LIB_HAVE_lib%.c: $(OBJDIR)/.mkdir			$(CONFIG_DEPS)
+$(OBJDIR)/CFG-LIB_HAVE_lib%.c: $(OBJDIR)/.mkdir			$(PKG_DEPS)
 	$(PRINT_COMMAND) echo 'int main() { return 0; }' > "$@"
 .PRECIOUS: $(OBJDIR)/CFG-LIB_HAVE_lib%.c
 

@@ -81,6 +81,7 @@ MAKE_EXE=       $(LD)            $(LDFLAGS) $(LDFLAGS_$*)  $(LINK_CMDLINE)      
 LINK_DIR_OPT=	-L
 LINK_LIB_OPT=	-l
 LINK_DLL_OPT=	-l
+LINK_CFG_OPT=	-l
 
 
 #------------------------------------------------------------------------------
