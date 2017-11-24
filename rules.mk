@@ -154,7 +154,7 @@ help:
 #   Internal targets
 #------------------------------------------------------------------------------
 
-build: hello config libraries recurse prebuild objects product postbuild goodbye
+build: hello config libraries prebuild recurse objects product postbuild goodbye
 
 ifndef V
 hello:
@@ -173,15 +173,19 @@ hello.install:
 hello.clean:
 endif
 
-libraries: $(OBJLIBS) $(OBJDLLS)
-product:$(OBJPRODUCTS)
-objects:$(OBJDIR:%=%/.mkdir) $(OBJECTS)
-
-# "Hooks" for pre and post build steps
-config: $(VARIANTS:%=%.variant)
+# Sequencing build steps and build step hooks
+config: hello
 config: $(CONFIG:%=config.h)
+config: $(NORM_CONFIG:%=$(OBJDIR)/CFG_HAVE_%.mk)
+libraries: $(OBJLIBS) $(OBJDLLS) config
+libraries: $(VARIANTS:%=%.variant)
 prebuild: config
-postbuild:
+recurse: prebuild
+objects: prebuild
+objects:$(OBJDIR:%=%/.mkdir) $(OBJECTS)
+product:$(OBJPRODUCTS)
+postbuild: product
+goodbye: postbuild
 
 # Run the test (in the object directory)
 product.test: product .ALWAYS
@@ -211,7 +215,8 @@ product.benchmark: product .ALWAYS
 	$(PRINT_TEST) gprof
 
 .PHONY: hello hello.install hello.clean goodbye
-.PHONY: build libraries product objects prebuild postbuild test
+.PHONY: all debug opt release profile build test install
+.PHONY: config libraries recurse prebuild objects product postbuild
 .PHONY: .ALWAYS
 
 
@@ -329,9 +334,9 @@ DEPENDENCIES=$(SOURCES:%=$(OBJDIR)/%$(OBJ_EXT).d)
 OBJDIR_DEPS=$(OBJDIR)/%.deps/.mkdir
 
 ifeq (3.80,$(firstword $(sort $(MAKE_VERSION) 3.80)))
-OBJ_DEPS=$(OBJDIR_DEPS) $(MAKEFILE_DEPS) | hello prebuild
+OBJ_DEPS=$(OBJDIR_DEPS) $(MAKEFILE_DEPS) | prebuild
 else
-OBJ_DEPS=$(OBJDIR_DEPS) $(MAKEFILE_DEPS)  hello prebuild
+OBJ_DEPS=$(OBJDIR_DEPS) $(MAKEFILE_DEPS)  prebuild
 endif
 
 ifndef DEPFLAGS
