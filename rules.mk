@@ -94,9 +94,6 @@ BUILD_COUNT:=   $(words $(SOURCES))
 GIT_REVISION:=  $(shell git rev-parse --short HEAD 2> /dev/null || echo "unknown")
 PROFILE_OUTPUT:=$(subst $(EXE_EXT),,$(OBJROOT_EXE))_prof_$(GIT_REVISION).vsp
 
--include $(PKGCONFIGS:%=$(OBJROOT)/%.pkg-config.mk)
-
-
 #------------------------------------------------------------------------------
 #   User targets
 #------------------------------------------------------------------------------
@@ -182,7 +179,6 @@ objects:$(OBJDIR:%=%/.mkdir) $(OBJECTS)
 
 # "Hooks" for pre and post build steps
 config: $(VARIANTS:%=%.variant)
-config: $(PKGCONFIGS:%=$(OBJROOT)/%.pkg-config.mk)
 config: $(CONFIG:%=config.h)
 prebuild: config
 postbuild:
@@ -208,11 +204,6 @@ product.test: product .ALWAYS
 	$(PRINT_INSTALL) $(INSTALL) $* $(PREFIX_DLL)
 %.install_hdr: $(PREFIX_HDR).mkdir
 	$(PRINT_INSTALL) $(INSTALL) $* $(PREFIX_HDR)
-
-# Check pkg-config
-$(OBJROOT)/%.pkg-config.mk: $(MAKEFILE_DEPS) $(OBJROOT)/.mkdir
-	$(PRINT_PKGCONFIG) pkg-config $*
-	$(PRINT_COMMAND)  (echo CFLAGS_PKGCONFIG+=`pkg-config --cflags $*` && echo LDFLAGS_PKGCONFIG+=`pkg-config --libs $*`) > $@
 
 # Benchmarking (always done with profile target)
 benchmark:	$(BENCHMARK:%=%.benchmark) $(BENCHMARKS:%=%.benchmark)
@@ -392,13 +383,30 @@ endif
 
 
 #------------------------------------------------------------------------------
+#   Package configuration
+#------------------------------------------------------------------------------
+
+# Package configuration file
+PKG_CFLAGS=$(PKGCONFIGS:%=$(OBJROOT)/%.pkg-config.cflags)
+PKG_LDFLAGS=$(PKGCONFIGS:%=$(OBJROOT)/%.pkg-config.ldflags)
+$(OBJROOT)/pkg-config.mk: $(PKG_CFLAGS) $(PKG_LDFLAGS)
+	$(PRINT_COMMAND) (echo CFLAGS_PKGCONFIG=`cat $(PKG_CFLAGS)`; echo LDFLAGS_PKGCONFIG=`cat $(PKG_LDFLAGS)`) > $@
+-include $(PKGCONFIGS:%=$(OBJROOT)/pkg-config.mk)
+
+$(OBJROOT)/%.pkg-config.cflags: $(MAKEFILE_DEPS) $(OBJROOT)/.mkdir
+	$(PRINT_PKGCONFIG)  pkg-config --cflags $* > $@
+$(OBJROOT)/%.pkg-config.ldflags: $(MAKEFILE_DEPS) $(OBJROOT)/.mkdir
+	$(PRINT_COMMAND)  pkg-config --libs $* > $@
+
+
+#------------------------------------------------------------------------------
 #   Configuration rules
 #------------------------------------------------------------------------------
 
 NORM_CONFIG=$(subst <,.lt.,$(subst >,.gt.,$(subst /,.sl.,$(CONFIG))))
 ORIG_TARGET=$(subst .lt.,<,$(subst .gt.,>,$(subst .sl.,/,$*)))
 CONFIG_DEPS=	$(MAKEFILE_DEPS) $(OBJDIR)/.mkdir			\
-		$(PKGCONFIGS:%=$(OBJROOT)/%.pkg-config.mk)
+		$(PKGCONFIGS:%=$(OBJROOT)/pkg-config.mk)
 
 config.h: $(NORM_CONFIG:%=$(OBJDIR)/CFG_HAVE_%.h)
 	$(PRINT_GENERATE) cat $^ > $@
