@@ -40,7 +40,7 @@ endif
 
 # Configuration variables
 OBJDIR:=        $(OBJROOT)/$(DIR)
-OBJECTS=        $(SOURCES:%=$(OBJDIR)/%$(OBJ_EXT))
+OBJECTS=        $(SOURCES:%=$(OBJDIR)%$(OBJ_EXT))
 PRODUCTS_EXE=   $(patsubst %.exe,%$(EXE_EXT),$(filter %.exe,$(PRODUCTS)))
 PRODUCTS_LIB=   $(patsubst %.lib,%$(LIB_EXT),$(filter %.lib,$(PRODUCTS)))
 PRODUCTS_DLL=   $(patsubst %.dll,%$(DLL_EXT),$(filter %.dll,$(PRODUCTS)))
@@ -170,7 +170,7 @@ endif
 # Sequencing build steps and build step hooks
 config: hello
 config: $(CONFIG:%=config.h)
-config: $(NORM_CONFIG:%=$(OBJDIR)/CFG_HAVE_%.mk)
+config: $(NORM_CONFIG:%=$(OBJDIR)CFG_HAVE_%.mk)
 config: $(VARIANTS:%=%.variant)
 libraries: config
 libraries: $(OBJLIBS) $(OBJDLLS)
@@ -325,8 +325,8 @@ endif
 
 ifdef TARGET
 
-DEPENDENCIES=$(SOURCES:%=$(OBJDIR)/%$(OBJ_EXT).d)
-OBJDIR_DEPS=$(OBJDIR)/%.deps/.mkdir
+DEPENDENCIES=$(SOURCES:%=$(OBJDIR)%$(OBJ_EXT).d)
+OBJDIR_DEPS=$(OBJDIR)%.deps/.mkdir
 
 ifeq (3.80,$(firstword $(sort $(MAKE_VERSION) 3.80)))
 OBJ_DEPS=$(OBJDIR_DEPS) $(MAKEFILE_DEPS) | prebuild
@@ -335,14 +335,14 @@ OBJ_DEPS=$(OBJDIR_DEPS) $(MAKEFILE_DEPS)  prebuild
 endif
 
 ifndef DEPFLAGS
-$(OBJDIR)/%.c$(OBJ_EXT).d:		%.c			$(OBJ_DEPS)
+$(OBJDIR)%.c$(OBJ_EXT).d:		%.c			$(OBJ_DEPS)
 	$(PRINT_DEPEND) ( $(CC_DEPEND)
-$(OBJDIR)/%.cpp$(OBJ_EXT).d:		%.cpp			$(OBJ_DEPS)
+$(OBJDIR)%.cpp$(OBJ_EXT).d:		%.cpp			$(OBJ_DEPS)
 	$(PRINT_DEPEND) ( $(CXX_DEPEND)
-$(OBJDIR)/%.s$(OBJ_EXT).d: 		%.s			$(OBJ_DEPS)
+$(OBJDIR)%.s$(OBJ_EXT).d: 		%.s			$(OBJ_DEPS)
 	$(PRINT_DEPEND) ( $(AS_DEPEND)
 else
-$(OBJDIR)/%$(OBJ_EXT).d: $(OBJDIR)/%$(OBJ_EXT)
+$(OBJDIR)%$(OBJ_EXT).d: $(OBJDIR)%$(OBJ_EXT)
 endif
 
 
@@ -350,11 +350,11 @@ endif
 #  Inference rules
 #------------------------------------------------------------------------------
 
-$(OBJDIR)/%.c$(OBJ_EXT): %.c 					$(OBJ_DEPS)
+$(OBJDIR)%.c$(OBJ_EXT): %.c 					$(OBJ_DEPS)
 	$(PRINT_COMPILE) $(MAKE_CC)
-$(OBJDIR)/%.cpp$(OBJ_EXT): %.cpp 				$(OBJ_DEPS)
+$(OBJDIR)%.cpp$(OBJ_EXT): %.cpp 				$(OBJ_DEPS)
 	$(PRINT_COMPILE) $(MAKE_CXX)
-$(OBJDIR)/%.s$(OBJ_EXT): %.s 					$(OBJ_DEPS)
+$(OBJDIR)%.s$(OBJ_EXT): %.s 					$(OBJ_DEPS)
 	$(PRINT_COMPILE) $(MAKE_AS)
 
 .SECONDEXPANSION:
@@ -387,27 +387,27 @@ endif
 #------------------------------------------------------------------------------
 
 # Package configuration file
-PKG_CFLAGS= 	$(PKGCONFIGS:%=$(OBJDIR)/%.pkg-config.cflags)
-PKG_LDFLAGS=	$(PKGCONFIGS:%=$(OBJDIR)/%.pkg-config.ldflags)
+PKG_CFLAGS= 	$(PKGCONFIGS:%=$(OBJDIR)%.pkg-config.cflags)
+PKG_LDFLAGS=	$(PKGCONFIGS:%=$(OBJDIR)%.pkg-config.ldflags)
 CONFIG_LIBS=
-PKG_LIBS=	$(patsubst %,$(OBJDIR)/%.cfg.ldflags,$(filter lib%,$(CONFIG)))
+PKG_LIBS=	$(patsubst %,$(OBJDIR)%.cfg.ldflags,$(filter lib%,$(CONFIG)))
 
-PKG_DEPS=	$(MAKEFILE_DEPS) $(OBJDIR)/.mkdir
+PKG_DEPS=	$(MAKEFILE_DEPS) $(OBJDIR).mkdir
 
-$(OBJDIR)/pkg-config.mk: $(PKG_CFLAGS) $(PKG_LDFLAGS) $(PKG_LIBS)
+$(OBJDIR)pkg-config.mk: $(PKG_CFLAGS) $(PKG_LDFLAGS) $(PKG_LIBS)
 	$(PRINT_COMMAND) (echo CFLAGS_PKGCONFIG=`cat $(PKG_CFLAGS)`; echo LDFLAGS_PKGCONFIG=`cat $(PKG_LDFLAGS) $(PKG_LIBS)`) > $@
--include $(PKGCONFIGS:%=$(OBJDIR)/pkg-config.mk)
+-include $(PKGCONFIGS:%=$(OBJDIR)pkg-config.mk)
 
-$(OBJDIR)/%?.pkg-config.cflags: 				$(PKG_DEPS)
+$(OBJDIR)%?.pkg-config.cflags: 					$(PKG_DEPS)
 	$(PRINT_PKGCONFIG)  (pkg-config --cflags $* --silence-errors || true) > $@
-$(OBJDIR)/%?.pkg-config.ldflags: 				$(PKG_DEPS)
+$(OBJDIR)%?.pkg-config.ldflags: 				$(PKG_DEPS)
 	$(PRINT_COMMAND)  (pkg-config --libs $* --silence-errors || true) > $@
 
-$(OBJDIR)/%.pkg-config.cflags: 					$(PKG_DEPS)
+$(OBJDIR)%.pkg-config.cflags: 					$(PKG_DEPS)
 	$(PRINT_PKGCONFIG)  pkg-config --cflags $* > $@
-$(OBJDIR)/%.pkg-config.ldflags: 				$(PKG_DEPS)
+$(OBJDIR)%.pkg-config.ldflags: 					$(PKG_DEPS)
 	$(PRINT_COMMAND)  pkg-config --libs $* > $@
-$(OBJDIR)/lib%.cfg.ldflags: $(OBJDIR)/CFG_HAVE_lib%.h		$(PKG_DEPS)
+$(OBJDIR)lib%.cfg.ldflags: $(OBJDIR)CFG_HAVE_lib%.h		$(PKG_DEPS)
 	$(PRINT_COMMAND)  (grep -q 'define ' $< && echo $(LINK_CFG_OPT)$* || true) > $@
 
 
@@ -417,49 +417,49 @@ $(OBJDIR)/lib%.cfg.ldflags: $(OBJDIR)/CFG_HAVE_lib%.h		$(PKG_DEPS)
 
 NORM_CONFIG=$(subst <,.lt.,$(subst >,.gt.,$(subst /,.sl.,$(CONFIG))))
 ORIG_TARGET=$(subst .lt.,<,$(subst .gt.,>,$(subst .sl.,/,$*)))
-CONFIG_DEPS=	$(MAKEFILE_DEPS) $(OBJDIR)/.mkdir			\
-		$(PKGCONFIGS:%=$(OBJDIR)/pkg-config.mk)
+CONFIG_DEPS=	$(MAKEFILE_DEPS) $(OBJDIR).mkdir			\
+		$(PKGCONFIGS:%=$(OBJDIR)pkg-config.mk)
 
-config.h: $(NORM_CONFIG:%=$(OBJDIR)/CFG_HAVE_%.h)
+config.h: $(NORM_CONFIG:%=$(OBJDIR)CFG_HAVE_%.h)
 	$(PRINT_GENERATE) cat $^ > $@
 
-$(OBJDIR)/CFG_HAVE_%.mk: $(OBJDIR)/CFG_HAVE_%.h 		$(MAKEFILE_DEPS)
+$(OBJDIR)CFG_HAVE_%.mk: $(OBJDIR)CFG_HAVE_%.h 			$(MAKEFILE_DEPS)
 	$(PRINT_COMMAND) $(MAKE_CONFIG)
--include $(NORM_CONFIG:%=$(OBJDIR)/CFG_HAVE_%.mk)
+-include $(NORM_CONFIG:%=$(OBJDIR)CFG_HAVE_%.mk)
 
 # C standard headers, e.g. HAVE_<stdio.h>
-$(OBJDIR)/CFG_HAVE_.lt.%.h.gt..h: $(OBJDIR)/CFG-CH_HAVE_%.c	$(CONFIG_DEPS)
+$(OBJDIR)CFG_HAVE_.lt.%.h.gt..h: $(OBJDIR)CFG-CH_HAVE_%.c	$(CONFIG_DEPS)
 	$(PRINT_CONFIG) $(CC_CONFIG)
-$(OBJDIR)/CFG-CH_HAVE_%.c: $(OBJDIR)/.mkdir			$(CONFIG_DEPS)
+$(OBJDIR)CFG-CH_HAVE_%.c: $(OBJDIR).mkdir			$(CONFIG_DEPS)
 	$(PRINT_COMMAND) (echo '#include' "<$(ORIG_TARGET).h>" && echo 'int main() { return 0; }') > "$@"
-.PRECIOUS: $(OBJDIR)/CFG-CH_HAVE_%.c
+.PRECIOUS: $(OBJDIR)CFG-CH_HAVE_%.c
 
 # C++ Standard headers, e.g. HAVE_<iostream>
-$(OBJDIR)/CFG_HAVE_.lt.%.gt..h: $(OBJDIR)/CFG-C++H_HAVE_%.cpp	$(CONFIG_DEPS)
+$(OBJDIR)CFG_HAVE_.lt.%.gt..h: $(OBJDIR)CFG-C++H_HAVE_%.cpp	$(CONFIG_DEPS)
 	$(PRINT_CONFIG) $(CXX_CONFIG)
-$(OBJDIR)/CFG-C++H_HAVE_%.cpp: $(OBJDIR)/.mkdir			$(CONFIG_DEPS)
+$(OBJDIR)CFG-C++H_HAVE_%.cpp: $(OBJDIR).mkdir			$(CONFIG_DEPS)
 	$(PRINT_COMMAND) (echo '#include' "<$(ORIG_TARGET)>" && echo 'int main() { return 0; }') > "$@"
-.PRECIOUS: $(OBJDIR)/CFG-C++H_HAVE_%.cpp
+.PRECIOUS: $(OBJDIR)CFG-C++H_HAVE_%.cpp
 
 # Library
-$(OBJDIR)/CFG_HAVE_lib%.h: $(OBJDIR)/CFG-LIB_HAVE_lib%.c	$(PKG_DEPS)
+$(OBJDIR)CFG_HAVE_lib%.h: $(OBJDIR)CFG-LIB_HAVE_lib%.c		$(PKG_DEPS)
 	$(PRINT_LIBCONFIG) $(LIB_CONFIG)
-$(OBJDIR)/CFG-LIB_HAVE_lib%.c: $(OBJDIR)/.mkdir			$(PKG_DEPS)
+$(OBJDIR)CFG-LIB_HAVE_lib%.c: $(OBJDIR).mkdir			$(PKG_DEPS)
 	$(PRINT_COMMAND) echo 'int main() { return 0; }' > "$@"
-.PRECIOUS: $(OBJDIR)/CFG-LIB_HAVE_lib%.c
+.PRECIOUS: $(OBJDIR)CFG-LIB_HAVE_lib%.c
 
 # Check if a function is present
-$(OBJDIR)/CFG_HAVE_%.h: $(OBJDIR)/CFG-FN_HAVE_%.c		$(CONFIG_DEPS)
+$(OBJDIR)CFG_HAVE_%.h: $(OBJDIR)CFG-FN_HAVE_%.c			$(CONFIG_DEPS)
 	$(PRINT_CONFIG)	$(FN_CONFIG)
-$(OBJDIR)/CFG-FN_HAVE_%.c: $(BUILD)config/HAVE_%.c 		$(CONFIG_DEPS)
+$(OBJDIR)CFG-FN_HAVE_%.c: $(BUILD)config/HAVE_%.c 		$(CONFIG_DEPS)
 	$(PRINT_COMMAND) cp $< $@
-$(OBJDIR)/CFG-FN_HAVE_%.c: config/HAVE_%.c			$(CONFIG_DEPS)
+$(OBJDIR)CFG-FN_HAVE_%.c: config/HAVE_%.c			$(CONFIG_DEPS)
 	$(PRINT_COMMAND) cp $< $@
-$(OBJDIR)/CFG-FN_HAVE_%.c: $(BUILD)config/check_%.c 		$(CONFIG_DEPS)
+$(OBJDIR)CFG-FN_HAVE_%.c: $(BUILD)config/check_%.c 		$(CONFIG_DEPS)
 	$(PRINT_COMMAND) cp $< $@
-$(OBJDIR)/CFG-FN_HAVE_%.c: config/check_%.c			$(CONFIG_DEPS)
+$(OBJDIR)CFG-FN_HAVE_%.c: config/check_%.c			$(CONFIG_DEPS)
 	$(PRINT_COMMAND) cp $< $@
-.PRECIOUS: $(OBJDIR)/CFG-FN_HAVE_%.c
+.PRECIOUS: $(OBJDIR)CFG-FN_HAVE_%.c
 
 
 #------------------------------------------------------------------------------
