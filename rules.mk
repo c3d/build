@@ -30,22 +30,16 @@ CXXFLAGS+=  $(CPPFLAGS) $(CXXFLAGS_STD) $(CFLAGS_PKGCONFIG) $(CXXFLAGS_$(BUILDEN
 LDFLAGS+=               $(CFLAGS_STD) $(CXXFLAGS_STD) $(LDFLAGS_PKGCONFIG) $(LDFLAGS_$(BUILDENV))  $(LDFLAGS_$(TARGET))        $(CFLAGS_EXTRA) $(LDFLAGS_EXTRA)
 
 ifndef DIR
-# The cd ./ in FULLDIR is for a corner case where . is a symbolic link
-# At least with bash (not sure with other shells), pwd returns me
-# the symbolic link path (as for BASEDIR), rather than the physical path
-
-# So this is necessary for the substitution to happen correctly. Ugh!
-BASEDIR:=       $(realpath $(BUILD)..)
-FULLDIR:=       $(abspath .)
-DIR:=           $(subst $(BASEDIR),,$(FULLDIR))
-PRETTY_DIR:=    $(subst $(BASEDIR),[top],$(FULLDIR))
+FULLDIR:=       $(abspath .)/
+DIR:=           $(subst $(TOP),,$(FULLDIR))
+PRETTY_DIR:=    $(subst $(TOP),[top],$(FULLDIR))
 BUILD_DATE:=    $(shell /bin/date '+%Y%m%d-%H%M%S')
 OBJROOT:=       $(OUTPUT)$(BUILDENV)/$(CROSS_COMPILE:%=%-)$(TARGET)$(BASE_EXTRA_DEPTH)
 BUILD_LOG:=     $(LOGS)build-$(BUILDENV)-$(CROSS_COMPILE:%=%-)$(TARGET)-$(BUILD_DATE).log
 endif
 
 # Configuration variables
-OBJDIR:=        $(OBJROOT)$(DIR)
+OBJDIR:=        $(OBJROOT)/$(DIR)
 OBJECTS=        $(SOURCES:%=$(OBJDIR)/%$(OBJ_EXT))
 PRODUCTS_EXE=   $(patsubst %.exe,%$(EXE_EXT),$(filter %.exe,$(PRODUCTS)))
 PRODUCTS_LIB=   $(patsubst %.lib,%$(LIB_EXT),$(filter %.lib,$(PRODUCTS)))
@@ -84,7 +78,7 @@ LINK_WINPUTS=   $(patsubst %,"%", $(shell cygpath -aw $(LINK_INPUTS)))
 endif
 PRINT_DIR=              --no-print-directory
 RECURSE_BUILDENV=$(BUILDENV)
-RECURSE_CMD=    $(MAKE) $(PRINT_DIR) TARGET=$(TARGET) BUILDENV=$(RECURSE_BUILDENV) BUILD="$(abspath $(BUILD))/" $(RECURSE) COLORIZE=
+RECURSE_CMD=    $(MAKE) $(PRINT_DIR) TARGET=$(TARGET) BUILDENV=$(RECURSE_BUILDENV) BUILD="$(abspath $(BUILD))/" TOP="$(abspath $(TOP))/" $(RECURSE) COLORIZE=
 MAKEFILE_DEPS:= $(MAKEFILE_LIST)
 NOT_PARALLEL?=  .NOTPARALLEL
 BUILD_LOW?=     0
@@ -227,7 +221,7 @@ product.benchmark: product .ALWAYS
 
 # Make from the top-level directory (useful from child directories)
 top-%:
-	cd $(BUILD); $(MAKE) $*
+	cd $(TOP); $(MAKE) $*
 
 # Verbose build (show all commands as executed)
 v-% verbose-%:

@@ -33,6 +33,9 @@ TARGET?=        opt
 # Default build environment if not set
 BUILDENV?=auto
 
+# Default top level directory
+TOP?=$(abspath .)/
+
 # Default location for object files
 OUTPUT?= $(BUILD)objects/
 
