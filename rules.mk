@@ -319,11 +319,11 @@ $(MAKECMDGOALS): deep_build
 endif
 
 
+ifdef RECURSE
 #------------------------------------------------------------------------------
 # Dependencies generation
 #------------------------------------------------------------------------------
 
-ifdef TARGET
 
 DEPENDENCIES=$(SOURCES:%=$(OBJDIR)%$(OBJ_EXT).d)
 OBJDIR_DEPS=$(OBJDIR)%.deps/.mkdir
@@ -364,8 +364,6 @@ $(OUTPUT_DLL): $(LINK_INPUTS) $$(LINK_INPUTS)			$(MAKEFILE_DEPS)
 	$(PRINT_BUILD) $(MAKE_DLL)
 $(OUTPUT_EXE): $(LINK_INPUTS) $$(LINK_INPUTS)			$(MAKEFILE_DEPS)
 	$(PRINT_BUILD) $(MAKE_EXE)
-
-endif
 
 # Only build the leaf projects in parallel,
 # since we don't have proper dependency between independent
@@ -461,6 +459,7 @@ $(OBJDIR)CFG-FN_HAVE_%.c: config/check_%.c			$(CONFIG_DEPS)
 	$(PRINT_COMMAND) cp $< $@
 .PRECIOUS: $(OBJDIR)CFG-FN_HAVE_%.c
 
+endif
 
 #------------------------------------------------------------------------------
 #  Makefile optimization tricks
