@@ -28,8 +28,7 @@ include $(BUILD)config.gnu.mk
 
 CFLAGS_ssev4=	-msse4
 DLL_EXT=	.dylib
-MAKE_LIB=	$(LIBTOOL) -static	$(LDFLAGS) $(LDFLAGS_$*)  	$(LINK_INPUTS)	-o $@
-MAKE_DLL=	$(LD)      -shared	$(LDFLAGS) $(LDFLAGS_$*)  	$(LINK_INPUTS)	-o $@	-rpath $(PREFIX_LIB)
+MAKE_DLL=	$(LD) -shared	$(LDFLAGS) $(LDFLAGS_$*)  	$(LINK_INPUTS)	-o $@	-rpath $(PREFIX_LIB)
 
 # On MacOSX, we will use basic frameworks e.g. for string and filesystem functions
 LDFLAGS_macosx-clang=	-framework CoreFoundation 			\
