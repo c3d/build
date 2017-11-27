@@ -253,6 +253,9 @@ Some of the most useful environment variables include:
 * `LOGS` is the directory where all logs should go. The default is
   `$(BUILD)/logs/`.
 
+* `TOP` is the top-level directory for the build, which defaults to
+  the directory in which `make` is started.
+
 
 ## Hierarchical projects
 
