@@ -177,7 +177,7 @@ libraries: $(OBJLIBS) $(OBJDLLS)
 prebuild: config
 recurse: prebuild
 objects: prebuild
-objects:$(OBJDIR:%=%/.mkdir) $(OBJECTS)
+objects:$(OBJDIR:%=%.mkdir) $(OBJECTS)
 product:$(OBJPRODUCTS)
 postbuild: product
 goodbye: postbuild
