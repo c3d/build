@@ -59,7 +59,7 @@ PREFIX_BIN?=$(PREFIX)bin/
 PREFIX_LIB?=$(PREFIX)lib/
 PREFIX_DLL?=$(PREFIX_LIB)
 PREFIX_HDR?=$(PREFIX)include/
-PREFIX_SHARE?=$(PREFIX)/share/
+PREFIX_SHARE?=$(PREFIX)share/
 
 
 #------------------------------------------------------------------------------
