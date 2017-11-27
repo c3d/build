@@ -169,9 +169,11 @@ endif
 
 # Sequencing build steps and build step hooks
 config: hello
+config: $(VARIANTS:%=%.variant)
+ifeq ($(VARIANTS),)
 config: $(CONFIG:%=config.h)
 config: $(NORM_CONFIG:%=$(OBJDIR)CFG_HAVE_%.mk)
-config: $(VARIANTS:%=%.variant)
+endif
 libraries: config
 libraries: $(OBJLIBS) $(OBJDLLS)
 prebuild: config
