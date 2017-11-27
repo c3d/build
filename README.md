@@ -283,9 +283,14 @@ prefix for builds, for example `make deep-debug`.
 ## Project configuration
 
 Often, projects have dependencies on specific features that are only
-available on some platorms or after installing specific
-dependencies. Historically, tools such as `autoconf` and `automake`
-have addressed this problem.
+available on some platforms or after installing specific
+dependencies. Tools such as `autoconf` and `automake`  address this
+problem in a separate build step.
+
+The `build` configuration step is designed to generate a `config.h`
+file with a content that is close enough to the output of `autoconf`
+to allow a same project to be adapted for `build` with minimal changes
+in the source code.
 
 In `build`, you specify the configuration dependencies using the
 `CONFIG` variable, which will define the various conditions you want
@@ -328,8 +333,13 @@ The following configuration options are recognized:
 
 For function names, a source file in the `config/` subdirectory will
 specify how you test for the given function, and possibly return
-additional output that will be integrated in the `config.h` file. For
-example, the `config/check_sbrk.c` file contains the following:
+additional output that will be integrated in the `config.h` file. The
+file name begins with `check_` followed by the function being
+tested, and can be located either in the `build` directory, or in the
+project directory. The `build/config` directory contains a few
+examples of such tests for simple functions.
+
+For example, the `config/check_sbrk.c` file contains the following:
 
     #include <unistd.h>
     #include <stdio.h>
@@ -344,6 +354,23 @@ Note that the example adds a `#define CONFIG_SBRK_BASE` in the
 `config.h`. This is only for illustration purpose, since modern
 systems attempt to randomize address space, making the value
 returned by `sbrk(0)` different with each run.
+
+
+## Package dependencies
+
+A `build` project can depend on other packages and use `pkg-config` to
+easily get the required compilation or link flags. The `PKGCONFIGS`
+variable lists the name of the required packages. if the name ends
+with `?`, the package is optional, and the build with succceed even if
+the package is not present.
+
+For example, `PKGCONFIGS` may look like this, in which case packages
+`pixman-1` and `gstreamer-1.0` are required, whereas package `openssl`
+is optional.
+
+    PKGCONFIGS=     pixman-1                    \
+                    openssl?                    \
+                    gstreamer-1.0
 
 
 ## Redistribution
