@@ -247,14 +247,17 @@ Some of the most useful environment variables include:
   For compatibility with `automake`-generated makefiles, you can also
   execute a staged install by setting `DESTDIR` when running `make`.
 
-* `OUTPUT` is the directory where all build output should go. The
-  default is `$(BUILD)/objects/`.
-
-* `LOGS` is the directory where all logs should go. The default is
-  `$(BUILD)/logs/`.
-
 * `TOP` is the top-level directory for the build, which defaults to
   the directory in which `make` is started.
+
+* `OUTPUT` is the directory where all build products should go. The
+  default is the `$(TOP)`.
+
+* `OBJFILES` is the directory where all build intermediate files
+  should go. The default is `.objects/` in `$(TOP)
+
+* `LOGS` is the directory where all logs should go. The default is
+  `.logs/` in `$(TOP)`.
 
 
 ## Hierarchical projects

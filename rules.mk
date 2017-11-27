@@ -34,7 +34,7 @@ FULLDIR:=       $(abspath .)/
 DIR:=           $(subst $(TOP),,$(FULLDIR))
 PRETTY_DIR:=    $(subst $(TOP),[top],$(FULLDIR))
 BUILD_DATE:=    $(shell /bin/date '+%Y%m%d-%H%M%S')
-OBJROOT:=       $(OUTPUT)$(BUILDENV)/$(CROSS_COMPILE:%=%-)$(TARGET)$(BASE_EXTRA_DEPTH)
+OBJROOT:=       $(OBJFILES)$(BUILDENV)/$(CROSS_COMPILE:%=%-)$(TARGET)$(BASE_EXTRA_DEPTH)
 BUILD_LOG:=     $(LOGS)build-$(BUILDENV)-$(CROSS_COMPILE:%=%-)$(TARGET)-$(BUILD_DATE).log
 endif
 
@@ -45,11 +45,11 @@ PRODUCTS_EXE=   $(patsubst %.exe,%$(EXE_EXT),$(filter %.exe,$(PRODUCTS)))
 PRODUCTS_LIB=   $(patsubst %.lib,%$(LIB_EXT),$(filter %.lib,$(PRODUCTS)))
 PRODUCTS_DLL=   $(patsubst %.dll,%$(DLL_EXT),$(filter %.dll,$(PRODUCTS)))
 PRODUCTS_OTHER= $(filter-out %.exe %.lib %.dll %$(EXE_EXT) %$(LIB_EXT) %$(DLL_EXT), $(PRODUCTS))
-OBJROOT_EXE=    $(PRODUCTS_EXE:%=$(OBJROOT)/$(EXE_PFX)%)
-OBJROOT_LIB=    $(PRODUCTS_LIB:%=$(OBJROOT)/$(LIB_PFX)%)
-OBJROOT_DLL=    $(PRODUCTS_DLL:%=$(OBJROOT)/$(DLL_PFX)%)
-OBJROOT_OTHER=  $(PRODUCTS_OTHER:%=$(OBJROOT)/%)
-OBJPRODUCTS=    $(OBJROOT_EXE) $(OBJROOT_LIB) $(OBJROOT_DLL) $(OBJROOT_OTHER)
+OUTPUT_EXE=    $(PRODUCTS_EXE:%=$(OUTPUT)/$(EXE_PFX)%)
+OUTPUT_LIB=    $(PRODUCTS_LIB:%=$(OUTPUT)/$(LIB_PFX)%)
+OUTPUT_DLL=    $(PRODUCTS_DLL:%=$(OUTPUT)/$(DLL_PFX)%)
+OUTPUT_OTHER=  $(PRODUCTS_OTHER:%=$(OUTPUT)/%)
+OBJPRODUCTS=    $(OUTPUT_EXE) $(OUTPUT_LIB) $(OUTPUT_DLL) $(OUTPUT_OTHER)
 
 # Check a common mistake with PRODUCTS= not being set or set without extension
 # Even on Linux / Unix, the PRODUCTS variable must end in .exe for executables,
@@ -66,9 +66,9 @@ endif
 ALL_LIBS=	$(LIBRARIES) $(LINK_LIBS)
 LIBNAMES=       $(filter %.lib, $(notdir $(ALL_LIBS)))
 DLLNAMES=       $(filter %.dll, $(notdir $(ALL_LIBS)))
-OBJLIBS= 	$(LIBNAMES:%.lib=$(OBJROOT)/$(LIB_PFX)%$(LIB_EXT))
-OBJDLLS=        $(DLLNAMES:%.dll=$(OBJROOT)/$(DLL_PFX)%$(DLL_EXT))
-LINK_PATHS:=	$(OBJROOT:%=$(LINK_DIR_OPT)%)
+OBJLIBS= 	$(LIBNAMES:%.lib=$(OUTPUT)/$(LIB_PFX)%$(LIB_EXT))
+OBJDLLS=        $(DLLNAMES:%.dll=$(OUTPUT)/$(DLL_PFX)%$(DLL_EXT))
+LINK_PATHS:=	$(OUTPUT:%=$(LINK_DIR_OPT)%)
 LINK_XLIBS=	$(LIBNAMES:%.lib=$(LINK_LIB_OPT)%)	\
 		$(DLLNAMES:%.dll=$(LINK_DLL_OPT)%)
 LINK_INPUTS=    $(OBJECTS) $(OBJLIBS) $(OBJDLLS)
@@ -86,7 +86,7 @@ BUILD_HIGH?=    100
 BUILD_INDEX:=   1
 BUILD_COUNT:=   $(words $(SOURCES))
 GIT_REVISION:=  $(shell git rev-parse --short HEAD 2> /dev/null || echo "unknown")
-PROFILE_OUTPUT:=$(subst $(EXE_EXT),,$(OBJROOT_EXE))_prof_$(GIT_REVISION).vsp
+PROFILE_OUTPUT:=$(subst $(EXE_EXT),,$(OUTPUT_EXE))_prof_$(GIT_REVISION).vsp
 
 #------------------------------------------------------------------------------
 #   User targets
@@ -108,9 +108,9 @@ startup restart rebuild: clean all
 install: all
 	$(PRINT_COMMAND) $(MAKE) RECURSE=install install-internal recurse LOG_COMMANDS= TIME= $(LOG_COMMANDS)
 install-internal:				\
-        $(OBJROOT_EXE:%=%.install_exe)          \
-        $(OBJROOT_LIB:%=%.install_lib)          \
-        $(OBJROOT_DLL:%=%.install_dll)          \
+        $(OUTPUT_EXE:%=%.install_exe)          \
+        $(OUTPUT_LIB:%=%.install_lib)          \
+        $(OUTPUT_DLL:%=%.install_dll)          \
         $(EXE_INSTALL:%=%.install_exe)          \
         $(LIB_INSTALL:%=%.install_lib)          \
         $(DLL_INSTALL:%=%.install_dll)		\
@@ -184,15 +184,15 @@ goodbye: postbuild
 
 # Run the test (in the object directory)
 product.test: product .ALWAYS
-	$(PRINT_TEST) $(TEST_ENV) $(OBJROOT_EXE) $(PRODUCTS_OPTS)
+	$(PRINT_TEST) $(TEST_ENV) $(OUTPUT_EXE) $(PRODUCTS_OPTS)
 
 # Run a test from a C or C++ file to link against current library
-%.c.test: $(OBJROOT_LIB) .ALWAYS
-	$(PRINT_BUILD) $(MAKE) SOURCES=$*.c LINK_LIBS=$(OBJROOT_LIB) PRODUCTS=$*.exe $(TARGET)
-	$(PRINT_TEST) $(TEST_ENV) $(TEST_CMD_$*) $(OBJROOT)/$*$(EXE_EXT) $(TEST_ARGS_$*)
-%.cpp.test: $(OBJROOT_LIB) .ALWAYS
-	$(PRINT_BUILD) $(MAKE) SOURCES=$*.cpp LINK_LIBS=$(OBJROOT_LIB) PRODUCTS=$*.exe $(TARGET)
-	$(PRINT_TEST) $(TEST_ENV) $(TEST_CMD_$*) $(OBJROOT)/$*$(EXE_EXT) $(TEST_ARGS_$*)
+%.c.test: $(OUTPUT_LIB) .ALWAYS
+	$(PRINT_BUILD) $(MAKE) SOURCES=$*.c LINK_LIBS=$(OUTPUT_LIB) PRODUCTS=$*.exe $(TARGET)
+	$(PRINT_TEST) $(TEST_ENV) $(TEST_CMD_$*) $(OUTPUT)/$*$(EXE_EXT) $(TEST_ARGS_$*)
+%.cpp.test: $(OUTPUT_LIB) .ALWAYS
+	$(PRINT_BUILD) $(MAKE) SOURCES=$*.cpp LINK_LIBS=$(OUTPUT_LIB) PRODUCTS=$*.exe $(TARGET)
+	$(PRINT_TEST) $(TEST_ENV) $(TEST_CMD_$*) $(OUTPUT)/$*$(EXE_EXT) $(TEST_ARGS_$*)
 
 # Installing the product: always need to build it first
 %.install_exe: $(PREFIX_BIN).mkdir build
@@ -267,9 +267,9 @@ recurse: $(SUBDIRS:%=%.recurse)
 	+$(PRINT_COMMAND) cd $* && $(RECURSE_CMD)
 
 # If LIBRARIES=foo/bar, go to directory foo/bar, which should build bar.a
-$(OBJROOT)/$(LIB_PFX)%$(LIB_EXT): $(DEEP_BUILD)
+$(OUTPUT)/$(LIB_PFX)%$(LIB_EXT): $(DEEP_BUILD)
 	+$(PRINT_COMMAND) cd $(filter %$*, $(LIBRARIES:.lib=) $(SUBDIRS)) && $(RECURSE_CMD)
-$(OBJROOT)/$(DLL_PFX)%$(DLL_EXT): $(DEEP_BUILD)
+$(OUTPUT)/$(DLL_PFX)%$(DLL_EXT): $(DEEP_BUILD)
 	+$(PRINT_COMMAND) cd $(filter %$*, $(LIBRARIES:.dll=) $(SUBDIRS)) && $(RECURSE_CMD)
 %/.test:
 	+$(PRINT_TEST) cd $* && $(MAKE) TARGET=$(TARGET) test
@@ -358,11 +358,11 @@ $(OBJDIR)/%.s$(OBJ_EXT): %.s 					$(OBJ_DEPS)
 	$(PRINT_COMPILE) $(MAKE_AS)
 
 .SECONDEXPANSION:
-$(OBJROOT_LIB): $(LINK_INPUTS) $$(LINK_INPUTS)	 		$(MAKEFILE_DEPS)
+$(OUTPUT_LIB): $(LINK_INPUTS) $$(LINK_INPUTS)	 		$(MAKEFILE_DEPS)
 	$(PRINT_BUILD) $(MAKE_LIB)
-$(OBJROOT_DLL): $(LINK_INPUTS) $$(LINK_INPUTS)			$(MAKEFILE_DEPS)
+$(OUTPUT_DLL): $(LINK_INPUTS) $$(LINK_INPUTS)			$(MAKEFILE_DEPS)
 	$(PRINT_BUILD) $(MAKE_DLL)
-$(OBJROOT_EXE): $(LINK_INPUTS) $$(LINK_INPUTS)			$(MAKEFILE_DEPS)
+$(OUTPUT_EXE): $(LINK_INPUTS) $$(LINK_INPUTS)			$(MAKEFILE_DEPS)
 	$(PRINT_BUILD) $(MAKE_EXE)
 
 endif

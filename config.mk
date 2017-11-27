@@ -36,11 +36,14 @@ BUILDENV?=auto
 # Default top level directory
 TOP?=$(abspath .)/
 
+# Default output for build products
+OUTPUT?= $(TOP)
+
 # Default location for object files
-OUTPUT?= $(BUILD)objects/
+OBJFILES?= $(TOP).objects/
 
 # Default location for build logs
-LOGS?=$(BUILD)logs/
+LOGS?=$(TOP).logs/
 LAST_LOG?=$(LOGS)make.log
 
 # Stuff to clean
