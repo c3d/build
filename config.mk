@@ -49,6 +49,15 @@ LAST_LOG?=$(LOGS)make.log
 # Stuff to clean
 TO_CLEAN=	*~ *.bak
 
+# Stuff to install
+TO_INSTALL=	$(OUTPUT_EXE:%=%.install_exe)		\
+		$(OUTPUT_LIB:%=%.install_lib)		\
+		$(OUTPUT_DLL:%=%.install_dll)		\
+		$(EXE_INSTALL:%=%.install_exe)		\
+		$(LIB_INSTALL:%=%.install_lib)		\
+		$(DLL_INSTALL:%=%.install_dll)		\
+		$(HDR_INSTALL:%=%.install_hdr)
+
 
 #------------------------------------------------------------------------------
 #   Installation paths

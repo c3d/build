@@ -116,12 +116,13 @@ LINK_DLL_OPT=-l:
 # In order to merge all .pdb information for an executable, we need to pass the -debug
 # option to the linker.
 
-MAKE_CC=       $(CC)  $(CFLAGS)   $(CPPFLAGS_$*) $(CFLAGS_$*)   -c -Fo$@ $<
-MAKE_CXX=      $(CXX) $(CXXFLAGS) $(CPPFLAGS_$*) $(CXXFLAGS_$*) -c -Fo$@ $<
-MAKE_OBJDIR=   mkdir -p $* && touch $@
-MAKE_LIB=      $(MSLIB)				$(LINK_INPUTS)        -out:$@
-MAKE_DLL=      $(LD) $(LDFLAGS) $(LDFLAGS_$*)   $(LINK_CMDLINE)-dll   -out:$@
-MAKE_EXE=      $(LD) $(LDFLAGS) $(LDFLAGS_$*)   $(LINK_CMDLINE)       -out:$@
+MAKE_CC=	$(CC)  $(CFLAGS)   $(CPPFLAGS_$*) $(CFLAGS_$*)	 -c -Fo$@ $<
+MAKE_CXX=	$(CXX) $(CXXFLAGS) $(CPPFLAGS_$*) $(CXXFLAGS_$*) -c -Fo$@ $<
+MAKE_DIR=	mkdir -p $*
+MAKE_OBJDIR=	$(MAKE_DIR) && touch $@
+MAKE_LIB=	$(MSLIB)			$(LINK_INPUTS)	      -out:$@
+MAKE_DLL=	$(LD) $(LDFLAGS) $(LDFLAGS_$*)	$(LINK_CMDLINE)-dll   -out:$@
+MAKE_EXE=	$(LD) $(LDFLAGS) $(LDFLAGS_$*)	$(LINK_CMDLINE)	      -out:$@
 
 
 #------------------------------------------------------------------------------
