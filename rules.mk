@@ -116,12 +116,13 @@ install-internal:				\
         $(DLL_INSTALL:%=%.install_dll)		\
 	$(HDR_INSTALL:%=%.install_hdr)
 
-clean: hello.clean
-	-$(PRINT_COMMAND) rm -f $(GARBAGE) $(TOCLEAN) $(OBJECTS) $(DEPENDENCIES) $(OBJPRODUCTS) config.h
+clean: $(SUBDIRS:%=%.clean)
+	-$(PRINT_CLEAN) rm -f $(TO_CLEAN) $(OBJECTS) $(DEPENDENCIES) $(OBJPRODUCTS) config.h
+%.clean:
+	$(PRINT_COMMAND) cd $* && $(RECURSE_CMD) clean $(COLORIZE)
 
-distclean: nuke clean
-nuke:
-	-$(PRINT_COMMAND) rm -rf $(OUTPUT) $(LOGS)build-*.log
+distclean nuke: clean
+	-$(PRINT_CLEAN) rm -rf $(OBJPRODUCTS) $(OBJFILES) $(LOGS)
 
 
 help:
@@ -150,22 +151,10 @@ help:
 
 build: hello config libraries prebuild recurse objects product postbuild goodbye
 
-ifndef V
 hello:
 	@$(INFO) "[BEGIN]" $(TARGET) $(BUILDENV) in $(PRETTY_DIR)
 goodbye:
 	@$(INFO) "[END]" $(TARGET) $(BUILDENV) in $(PRETTY_DIR)
-
-hello.install:
-	@$(INFO) "[INSTALL]"	$(TARGET) $(BUILDENV) in $(PRETTY_DIR)
-hello.clean:
-	@$(INFO) "[CLEAN]" $(TARGET) $(BUILDENV) in $(PRETTY_DIR)
-else
-hello:
-goodbye:
-hello.install:
-hello.clean:
-endif
 
 # Sequencing build steps and build step hooks
 config: hello
@@ -177,7 +166,6 @@ endif
 libraries: config
 libraries: $(OBJLIBS) $(OBJDLLS)
 prebuild: config
-recurse: prebuild
 objects: prebuild
 objects:$(OBJDIR:%=%.mkdir) $(OBJECTS)
 product:$(OBJPRODUCTS)
@@ -211,7 +199,7 @@ benchmark:	$(BENCHMARK:%=%.benchmark) $(BENCHMARKS:%=%.benchmark)
 product.benchmark: product .ALWAYS
 	$(PRINT_TEST) gprof
 
-.PHONY: hello hello.install hello.clean goodbye
+.PHONY: hello goodbye
 .PHONY: all debug opt release profile build test install
 .PHONY: config libraries recurse prebuild objects product postbuild
 .PHONY: .ALWAYS
@@ -297,6 +285,7 @@ PRINT_BUILD= 	$(PRINT_COMMAND) $(INFO) "[BUILD]" $(shell basename $@);
 PRINT_GENERATE= $(PRINT_COMMAND) $(INFO) "[GENERATE]" "$(shell basename "$@")";
 PRINT_VARIANT=  $(PRINT_COMMAND) $(INFO) "[VARIANT]" "$*";
 PRINT_INSTALL=  $(PRINT_COMMAND) $(INFO) "[INSTALL] " $(*F) in $(<D);
+PRINT_CLEAN=    $(PRINT_COMMAND) $(INFO) "[CLEAN] " $@ $(PRETTY_DIR) $(COLORIZE);
 PRINT_COPY=     $(PRINT_COMMAND) $(INFO) "[COPY]" $< '=>' $@ ;
 PRINT_DEPEND= 	$(PRINT_COMMAND) $(INFO) "[DEPEND] " $< ;
 PRINT_TEST= 	$(PRINT_COMMAND) $(INFO) "[TEST]" $(@:.test=) ;
