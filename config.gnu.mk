@@ -128,5 +128,5 @@ CXX_CONFIG=	$(CFG_DEF) HAVE_$(CFG_UPPER)    $(CFG_CXX_CMD) $(CFG_UNDEF0)
 LIB_CONFIG=	$(CFG_DEF) HAVE_LIB$(CFG_UPPER) $(CFG_LIB_CMD) $(CFG_UNDEF0)
 FN_CONFIG=	$(CFG_DEF) HAVE_$(CFG_UPPER) 	$(CFG_FN_CMD)  $(CFG_UNDEF0)
 
-MAKE_CONFIG=	sed	-e 's|^\#define \(.*\) \(.*\)$$|\1=\2|g' 	\
+MAKE_CONFIG=	sed	-e 's|^\#define \([^ ]*\) \(.*\)$$|\1=\2|g' 	\
 			-e 's|.*undef.*||g' < "$<" > "$@"
