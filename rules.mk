@@ -39,17 +39,18 @@ BUILD_LOG:=     $(LOGS)build-$(BUILDENV)-$(CROSS_COMPILE:%=%-)$(TARGET)-$(BUILD_
 endif
 
 # Configuration variables
-OBJDIR:=        $(OBJROOT)/$(DIR)
-OBJECTS=        $(SOURCES:%=$(OBJDIR)%$(OBJ_EXT))
-PRODUCTS_EXE=   $(patsubst %.exe,%$(EXE_EXT),$(filter %.exe,$(PRODUCTS)))
-PRODUCTS_LIB=   $(patsubst %.lib,%$(LIB_EXT),$(filter %.lib,$(PRODUCTS)))
-PRODUCTS_DLL=   $(patsubst %.dll,%$(DLL_EXT),$(filter %.dll,$(PRODUCTS)))
+OBJDIR:=	$(OBJROOT)/$(DIR)
+OBJECTS=	$(SOURCES:%=$(OBJDIR)%$(OBJ_EXT))
+PRODUCTS_EXE=	$(patsubst %.exe,%$(EXE_EXT),$(filter %.exe,$(PRODUCTS)))
+PRODUCTS_LIB=	$(patsubst %.lib,%$(LIB_EXT),$(filter %.lib,$(PRODUCTS)))
+PRODUCTS_DLL=	$(patsubst %.dll,%$(DLL_EXT),$(filter %.dll,$(PRODUCTS)))
 PRODUCTS_OTHER= $(filter-out %.exe %.lib %.dll %$(EXE_EXT) %$(LIB_EXT) %$(DLL_EXT), $(PRODUCTS))
-OUTPUT_EXE=    $(PRODUCTS_EXE:%=$(OUTPUT)$(EXE_PFX)%)
-OUTPUT_LIB=    $(PRODUCTS_LIB:%=$(OUTPUT)$(LIB_PFX)%)
-OUTPUT_DLL=    $(PRODUCTS_DLL:%=$(OUTPUT)$(DLL_PFX)%)
-OUTPUT_OTHER=  $(PRODUCTS_OTHER:%=$(OUTPUT)%)
-OBJPRODUCTS=    $(OUTPUT_EXE) $(OUTPUT_LIB) $(OUTPUT_DLL) $(OUTPUT_OTHER)
+PRODUCTS_LIBS=	$(filter %.lib %.dll,$(PRODUCTS))
+OUTPUT_EXE=	$(PRODUCTS_EXE:%=$(OUTPUT)$(EXE_PFX)%)
+OUTPUT_LIB=	$(PRODUCTS_LIB:%=$(OUTPUT)$(LIB_PFX)%)
+OUTPUT_DLL=	$(PRODUCTS_DLL:%=$(OUTPUT)$(DLL_PFX)%)
+OUTPUT_OTHER=	$(PRODUCTS_OTHER:%=$(OUTPUT)%)
+OBJPRODUCTS=	$(OUTPUT_EXE) $(OUTPUT_LIB) $(OUTPUT_DLL) $(OUTPUT_OTHER)
 
 # Check a common mistake with PRODUCTS= not being set or set without extension
 # Even on Linux / Unix, the PRODUCTS variable must end in .exe for executables,
@@ -170,10 +171,10 @@ product.test: product .ALWAYS
 
 # Run a test from a C or C++ file to link against current library
 %.c.test: $(OUTPUT_LIB) .ALWAYS
-	$(PRINT_BUILD) $(MAKE) SOURCES=$*.c LINK_LIBS=$(OUTPUT_LIB) PRODUCTS=$*.exe $(TARGET)
+	$(PRINT_BUILD) $(MAKE) SOURCES=$*.c LINK_LIBS="$(PRODUCTS_LIBS)" PRODUCTS=$*.exe $(TARGET)
 	$(PRINT_TEST) $(TEST_ENV) $(TEST_CMD_$*) $(OUTPUT)$*$(EXE_EXT) $(TEST_ARGS_$*)
 %.cpp.test: $(OUTPUT_LIB) .ALWAYS
-	$(PRINT_BUILD) $(MAKE) SOURCES=$*.cpp LINK_LIBS=$(OUTPUT_LIB) PRODUCTS=$*.exe $(TARGET)
+	$(PRINT_BUILD) $(MAKE) SOURCES=$*.cpp LINK_LIBS="$(PRODUCTS_LIBS)" PRODUCTS=$*.exe $(TARGET)
 	$(PRINT_TEST) $(TEST_ENV) $(TEST_CMD_$*) $(OUTPUT)$*$(EXE_EXT) $(TEST_ARGS_$*)
 
 # Installing the product: always need to build it first
