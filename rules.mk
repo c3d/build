@@ -261,9 +261,9 @@ recurse: $(SUBDIRS:%=%.recurse)
 
 # If LIBRARIES=foo/bar, go to directory foo/bar, which should build bar.a
 $(OUTPUT)$(LIB_PFX)%$(LIB_EXT): $(DEEP_BUILD)
-	+$(PRINT_COMMAND) cd $(filter %$*, $(LIBRARIES:.lib=) $(SUBDIRS)) && $(RECURSE_CMD)
+	+$(PRINT_COMMAND) cd $(firstword $(dir $(filter %$*, $(LIBRARIES:.lib=) $(SUBDIRS))) .) && $(RECURSE_CMD)
 $(OUTPUT)$(DLL_PFX)%$(DLL_EXT): $(DEEP_BUILD)
-	+$(PRINT_COMMAND) cd $(filter %$*, $(LIBRARIES:.dll=) $(SUBDIRS)) && $(RECURSE_CMD)
+	+$(PRINT_COMMAND) cd $(firstword $(dir $(filter %$*, $(LIBRARIES:.dll=) $(SUBDIRS))) .) && $(RECURSE_CMD)
 %/.test:
 	+$(PRINT_TEST) cd $* && $(MAKE) TARGET=$(TARGET) test
 deep_build:
