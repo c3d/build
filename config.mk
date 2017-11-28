@@ -47,7 +47,7 @@ LOGS?=$(TOP).logs/
 LAST_LOG?=$(LOGS)make.log
 
 # Stuff to clean
-GARBAGE=        *~ *.bak
+TO_CLEAN=	*~ *.bak
 
 
 #------------------------------------------------------------------------------
