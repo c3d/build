@@ -379,7 +379,7 @@ PKG_LIBS=	$(patsubst %,$(OBJDIR)%.cfg.ldflags,$(filter lib%,$(CONFIG)))
 PKG_DEPS=	$(MAKEFILE_DEPS) $(OBJDIR).mkdir
 
 $(OBJDIR)pkg-config.mk: $(PKG_CFLAGS) $(PKG_LDFLAGS) $(PKG_LIBS)
-	$(PRINT_COMMAND) (echo CFLAGS_PKGCONFIG=`cat $(PKG_CFLAGS)`; echo LDFLAGS_PKGCONFIG=`cat $(PKG_LDFLAGS) $(PKG_LIBS)`) > $@
+	$(PRINT_COMMAND) (echo CFLAGS_PKGCONFIG=`$(CAT) $(PKG_CFLAGS)`; echo LDFLAGS_PKGCONFIG=`$(CAT) $(PKG_LDFLAGS) $(PKG_LIBS)`) > $@
 -include $(PKGCONFIGS:%=$(OBJDIR)pkg-config.mk)
 
 $(OBJDIR)%?.pkg-config.cflags: 					$(PKG_DEPS)

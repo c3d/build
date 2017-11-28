@@ -35,6 +35,7 @@ AR=             $(CROSS_COMPILE:%=%-)ar -rcs
 RANLIB=         $(CROSS_COMPILE:%=%-)ranlib
 LIBTOOL=        libtool -no_warning_for_no_symbols
 INSTALL=	install
+CAT=		cat /dev/null
 
 
 #------------------------------------------------------------------------------
@@ -115,12 +116,12 @@ CFG_TEST=								\
 CFG_UNDEF0=								\
 	| sed -e 's|^\#define \(.*\) 0$$|/* \#undef \1 */|g' > "$@";	\
 	[ -f "$<".out ] && cat >> "$@" "$<".out; true
-CFG_CFLAGS=	$(CFLAGS)   $(shell cat $(PKG_CFLAGS) $(PKG_LDFLAGS) /dev/null)
-CFG_CXXFLAGS=	$(CXXFLAGS) $(shell cat $(PKG_CFLAGS) $(PKG_LDFLAGS) /dev/null)
+CFG_CFLAGS=	$(CFLAGS)   $(shell $(CAT) $(PKG_CFLAGS) $(PKG_LDFLAGS))
+CFG_CXXFLAGS=	$(CXXFLAGS) $(shell $(CAT) $(PKG_CFLAGS) $(PKG_LDFLAGS))
 
 CFG_CC_CMD=	`$(CC)  $(CFG_CFLAGS)   $(CFLAGS_CONFIG_$*)        $(CFG_TEST)`
 CFG_CXX_CMD=	`$(CXX) $(CFG_CXXFLAGS) $(CXXFLAGS_CONFIG_$*)      $(CFG_TEST)`
-CFG_LIB_CMD=	`$(CC)  $(CFG_CFLAGS)   $(CFLAGS_CONFIG_$*)   -l$* $(CFG_TEST)`
+CFG_LIB_CMD=	`$(CC)   		$(CFLAGS_CONFIG_$*)   -l$* $(CFG_TEST)`
 CFG_FN_CMD=	`$(CC)  $(CFG_CFLAGS)   $(CFLAGS_CONFIG_$*)        $(CFG_TEST)`
 
 CC_CONFIG=	$(CFG_DEF) HAVE_$(CFG_UPPER)_H  $(CFG_CC_CMD)  $(CFG_UNDEF0)

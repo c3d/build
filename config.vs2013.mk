@@ -35,6 +35,7 @@ PYTHON= python
 AR=     no-ar-on-windows
 RANLIB= no-ranlib-on-windows
 INSTALL=install
+CAT=	type
 
 
 #------------------------------------------------------------------------------
