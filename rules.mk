@@ -143,9 +143,9 @@ help:
 build: hello config libraries prebuild recurse objects product postbuild goodbye
 
 hello:
-	@$(INFO) "[BEGIN]" $(TARGET) $(BUILDENV) in $(PRETTY_DIR)
+	@$(INFO) "[BEGIN]" $(TARGET) $(BUILDENV) in "$(PRETTY_DIR)$(VARIANT:%=[%])"
 goodbye:
-	@$(INFO) "[END]" $(TARGET) $(BUILDENV) in $(PRETTY_DIR)
+	@$(INFO) "[END]" $(TARGET) $(BUILDENV) in "$(PRETTY_DIR)$(VARIANT:%=[%])"
 
 # Sequencing build steps and build step hooks
 config: hello
