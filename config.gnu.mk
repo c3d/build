@@ -98,7 +98,7 @@ AS_DEPEND=      $(CC)  $(CPPFLAGS) $(CPPFLAGS_$*) -MM -MP -MF $@ -MT $(@:.d=) $<
 #  Test environment
 #------------------------------------------------------------------------------
 
-TEST_ENV=	LD_LIBRARY_PATH=$(OBJROOT)
+TEST_ENV=	LD_LIBRARY_PATH=$(OUTPUT)
 
 
 #------------------------------------------------------------------------------
