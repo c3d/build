@@ -105,16 +105,7 @@ test tests check: $(TARGET)
 startup restart rebuild: clean all
 
 # Installation
-install: all
-	$(PRINT_COMMAND) $(MAKE) RECURSE=install install-internal recurse LOG_COMMANDS= TIME= $(LOG_COMMANDS)
-install-internal:				\
-        $(OUTPUT_EXE:%=%.install_exe)          \
-        $(OUTPUT_LIB:%=%.install_lib)          \
-        $(OUTPUT_DLL:%=%.install_dll)          \
-        $(EXE_INSTALL:%=%.install_exe)          \
-        $(LIB_INSTALL:%=%.install_lib)          \
-        $(DLL_INSTALL:%=%.install_dll)		\
-	$(HDR_INSTALL:%=%.install_hdr)
+install: install-all
 
 clean: $(SUBDIRS:%=%.clean)
 	-$(PRINT_CLEAN) rm -f $(TO_CLEAN) $(OBJECTS) $(DEPENDENCIES) $(OBJPRODUCTS) config.h
@@ -129,10 +120,10 @@ help:
 	@$(ECHO) "Available targets:"
 	@$(ECHO) "  make                : Build default target (TARGET=$(TARGET))"
 	@$(ECHO) "  make all            : Same"
-	@$(ECHO) "  make debug          : Force debug build"
-	@$(ECHO) "  make opt            : Force optimized build"
-	@$(ECHO) "  make release        : Force release build"
-	@$(ECHO) "  make profile        : Force profile build"
+	@$(ECHO) "  make debug          : Debug build"
+	@$(ECHO) "  make opt            : Optimized build with debug info"
+	@$(ECHO) "  make release        : Release build without debug info"
+	@$(ECHO) "  make profile        : Profile build"
 	@$(ECHO) "  make clean          : Clean build results (only BUILDENV=$(BUILDENV))"
 	@$(ECHO) "  make rebuild        : Clean before building"
 	@$(ECHO) "  make nuke           : Clean build directory"
@@ -169,7 +160,8 @@ prebuild: config
 objects: prebuild
 objects:$(OBJDIR:%=%.mkdir) $(OBJECTS)
 product:$(OBJPRODUCTS)
-postbuild: product
+postbuild: product $(DO_INSTALL)
+do_install: $(TO_INSTALL)
 goodbye: postbuild
 
 # Run the test (in the object directory)
@@ -185,13 +177,13 @@ product.test: product .ALWAYS
 	$(PRINT_TEST) $(TEST_ENV) $(TEST_CMD_$*) $(OUTPUT)$*$(EXE_EXT) $(TEST_ARGS_$*)
 
 # Installing the product: always need to build it first
-%.install_exe: $(PREFIX_BIN).mkdir build
+%.install_exe: $(PREFIX_BIN).mkdir-only product
 	$(PRINT_INSTALL) $(INSTALL) $* $(PREFIX_BIN)
-%.install_lib: $(PREFIX_LIB).mkdir build
+%.install_lib: $(PREFIX_LIB).mkdir-only product
 	$(PRINT_INSTALL) $(INSTALL) $* $(PREFIX_LIB)
-%.install_dll: $(PREFIX_DLL).mkdir build
+%.install_dll: $(PREFIX_DLL).mkdir-only product
 	$(PRINT_INSTALL) $(INSTALL) $* $(PREFIX_DLL)
-%.install_hdr: $(PREFIX_HDR).mkdir
+%.install_hdr: $(PREFIX_HDR).mkdir-only
 	$(PRINT_INSTALL) $(INSTALL) $* $(PREFIX_HDR)
 
 # Benchmarking (always done with profile target)
@@ -220,6 +212,14 @@ v-% verbose-%:
 # Timed build (show the time for each step)
 t-% time-%:
 	$(PRINT_COMMAND) time $(MAKE) $*
+
+# Timed build (show the time for each step)
+notime-%:
+	$(PRINT_COMMAND) $(MAKE) TIME= $*
+
+# Installation build
+install-%:
+	$(PRINT_COMMAND) $(MAKE) DO_INSTALL=do_install
 
 # Deep build (re-check all libraries instead of just resulting .a)
 d-% deep-%:
@@ -284,7 +284,7 @@ PRINT_COMPILE=	$(PRINT_COMMAND) $(INFO) "[COMPILE$(PRINT_COUNT)] " $<;
 PRINT_BUILD= 	$(PRINT_COMMAND) $(INFO) "[BUILD]" $(shell basename $@);
 PRINT_GENERATE= $(PRINT_COMMAND) $(INFO) "[GENERATE]" "$(shell basename "$@")";
 PRINT_VARIANT=  $(PRINT_COMMAND) $(INFO) "[VARIANT]" "$*";
-PRINT_INSTALL=  $(PRINT_COMMAND) $(INFO) "[INSTALL] " $(*F) in $(<D);
+PRINT_INSTALL=  $(PRINT_COMMAND) $(INFO) "[INSTALL] " $(*F) in $(<D) $(COLORIZE);
 PRINT_CLEAN=    $(PRINT_COMMAND) $(INFO) "[CLEAN] " $@ $(PRETTY_DIR) $(COLORIZE);
 PRINT_COPY=     $(PRINT_COMMAND) $(INFO) "[COPY]" $< '=>' $@ ;
 PRINT_DEPEND= 	$(PRINT_COMMAND) $(INFO) "[DEPEND] " $< ;
@@ -295,6 +295,8 @@ PRINT_LIBCONFIG=$(PRINT_COMMAND) $(INFO) "[LIBCONFIG]" "lib$*" ;
 endif
 
 logs.mkdir: $(LOGS).mkdir $(dir $(LAST_LOG))/.mkdir
+%/.mkdir-only:
+	$(PRINT_COMMAND) $(MAKE_DIR)
 %/.mkdir:
 	$(PRINT_COMMAND) $(MAKE_OBJDIR)
 .PRECIOUS: %/.mkdir
@@ -355,14 +357,6 @@ $(OUTPUT_DLL): $(LINK_INPUTS) $$(LINK_INPUTS)			$(MAKEFILE_DEPS)
 	$(PRINT_BUILD) $(MAKE_DLL)
 $(OUTPUT_EXE): $(LINK_INPUTS) $$(LINK_INPUTS)			$(MAKEFILE_DEPS)
 	$(PRINT_BUILD) $(MAKE_EXE)
-
-# Only build the leaf projects in parallel,
-# since we don't have proper dependency between independent
-# libraries and we may otherwise end up building the same
-# library multiple times "in parallel" (wasting energy)
-ifneq ($(SUBDIRS)$(VARIANTS),)
-$(NOT_PARALLEL):
-endif
 
 # Include dependencies from current directory
 # We only build when the target is set to avoid dependencies on 'clean'
@@ -461,3 +455,11 @@ endif
 
 # Build with a single shell for all commands
 .ONESHELL:
+
+# Only build the leaf projects in parallel,
+# since we don't have proper dependency between independent
+# libraries and we may otherwise end up building the same
+# library multiple times "in parallel" (wasting energy)
+ifneq ($(SUBDIRS)$(VARIANTS),)
+$(NOT_PARALLEL):
+endif

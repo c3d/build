@@ -70,13 +70,14 @@ DLL_PFX=	lib
 #  Build rules
 #------------------------------------------------------------------------------
 
-MAKE_CC=        $(CC)   $(CFLAGS)   $(CPPFLAGS_$*) $(CFLAGS_$*)   -c $< -o $@ $(DEPFLAGS)
-MAKE_CXX=       $(CXX)  $(CXXFLAGS) $(CPPFLAGS_$*) $(CXXFLAGS_$*) -c $< -o $@ $(DEPFLAGS)
-MAKE_AS=        $(CC)   $(CFLAGS)   $(CPPFLAGS_$*) $(CFLAGS_$*)   -c $< -o $@ $(DEPFLAGS)
-MAKE_OBJDIR=    mkdir -p $*                                       && touch $@
-MAKE_LIB=       $(AR) $@         $(LINK_INPUTS)&& $(RANLIB) $@
-MAKE_DLL=       $(LD) -shared    $(LDFLAGS) $(LDFLAGS_$*)  $(LINK_CMDLINE)         -o $@
-MAKE_EXE=       $(LD)            $(LDFLAGS) $(LDFLAGS_$*)  $(LINK_CMDLINE)         -o $@
+MAKE_CC=	$(CC)	$(CFLAGS)   $(CPPFLAGS_$*) $(CFLAGS_$*)	  -c $< -o $@ $(DEPFLAGS)
+MAKE_CXX=	$(CXX)	$(CXXFLAGS) $(CPPFLAGS_$*) $(CXXFLAGS_$*) -c $< -o $@ $(DEPFLAGS)
+MAKE_AS=	$(CC)	$(CFLAGS)   $(CPPFLAGS_$*) $(CFLAGS_$*)	  -c $< -o $@ $(DEPFLAGS)
+MAKE_DIR=	mkdir -p $*
+MAKE_OBJDIR=	$(MAKE_DIR)					  && touch $@
+MAKE_LIB=	$(AR) $@	 $(LINK_INPUTS)&& $(RANLIB) $@
+MAKE_DLL=	$(LD) -shared	 $(LDFLAGS) $(LDFLAGS_$*)  $(LINK_CMDLINE)	   -o $@
+MAKE_EXE=	$(LD)		 $(LDFLAGS) $(LDFLAGS_$*)  $(LINK_CMDLINE)	   -o $@
 
 LINK_DIR_OPT=	-L
 LINK_LIB_OPT=	-l
