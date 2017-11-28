@@ -32,7 +32,7 @@ LDFLAGS+=               $(CFLAGS_STD) $(CXXFLAGS_STD) $(LDFLAGS_PKGCONFIG) $(LDF
 ifndef DIR
 FULLDIR:=       $(abspath .)/
 DIR:=           $(subst $(TOP),,$(FULLDIR))
-PRETTY_DIR:=    $(subst $(TOP),[top],$(FULLDIR))
+PRETTY_DIR:=    $(subst $(TOP),[top],$(FULLDIR)$(VARIANT:%=[%]))
 BUILD_DATE:=    $(shell /bin/date '+%Y%m%d-%H%M%S')
 OBJROOT:=       $(OBJFILES)$(BUILDENV)/$(CROSS_COMPILE:%=%-)$(TARGET)$(BASE_EXTRA_DEPTH)
 BUILD_LOG:=     $(LOGS)build-$(BUILDENV)-$(CROSS_COMPILE:%=%-)$(TARGET)-$(BUILD_DATE).log
@@ -108,10 +108,12 @@ startup restart rebuild: clean all
 # Installation
 install: install-all
 
-clean: $(SUBDIRS:%=%.clean)
+clean: $(SUBDIRS:%=%.clean) $(VARIANTS:%=%.variant-clean)
 	-$(PRINT_CLEAN) rm -f $(TO_CLEAN) $(OBJECTS) $(DEPENDENCIES) $(OBJPRODUCTS) config.h
 %.clean:
 	$(PRINT_COMMAND) cd $* && $(RECURSE_CMD) clean $(COLORIZE)
+%.variant-clean:
+	$(PRINT_COMMAND) $(RECURSE_CMD) VARIANT=$* VARIANTS= clean $(COLORIZE)
 
 distclean nuke: clean
 	-$(PRINT_CLEAN) rm -rf $(OBJPRODUCTS) $(OBJFILES) $(LOGS)
@@ -144,9 +146,9 @@ help:
 build: hello config libraries prebuild recurse objects product postbuild goodbye
 
 hello:
-	@$(INFO) "[BEGIN]" $(TARGET) $(BUILDENV) in "$(PRETTY_DIR)$(VARIANT:%=[%])"
+	@$(INFO) "[BEGIN]" $(TARGET) $(BUILDENV) in "$(PRETTY_DIR)"
 goodbye:
-	@$(INFO) "[END]" $(TARGET) $(BUILDENV) in "$(PRETTY_DIR)$(VARIANT:%=[%])"
+	@$(INFO) "[END]" $(TARGET) $(BUILDENV) in "$(PRETTY_DIR)"
 
 # Sequencing build steps and build step hooks
 config: hello
