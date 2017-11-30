@@ -63,6 +63,7 @@ TO_INSTALL=	$(OUTPUT_EXE:%=%.install_exe)		\
 #   Installation paths
 #------------------------------------------------------------------------------
 
+SYSCONFIG?=$(DESTDIR)/etc/
 PREFIX?=$(DESTDIR)/usr/local/
 PREFIX_BIN?=$(PREFIX)bin/
 PREFIX_LIB?=$(PREFIX)lib/
