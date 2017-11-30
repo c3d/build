@@ -109,7 +109,7 @@ startup restart rebuild: clean all
 install: install-all
 
 clean: $(SUBDIRS:%=%.clean) $(VARIANTS:%=%.variant-clean)
-	-$(PRINT_CLEAN) rm -f $(TO_CLEAN) $(OBJECTS) $(DEPENDENCIES) $(OBJPRODUCTS) config.h
+	-$(PRINT_CLEAN) rm -f $(TO_CLEAN) $(OBJECTS) $(DEPENDENCIES) $(OBJPRODUCTS) $(LINK_INPUTS) config.h
 %.clean:
 	$(PRINT_COMMAND) cd $* && $(RECURSE_CMD) clean $(COLORIZE)
 %.variant-clean:
