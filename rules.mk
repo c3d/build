@@ -27,7 +27,7 @@ XDEFINES=   $(DEFINES)  $(DEFINES_$(BUILDENV))  $(DEFINES_$(TARGET))        $(DE
 CPPFLAGS+=              $(CPPFLAGS_$(BUILDENV)) $(CPPFLAGS_$(TARGET))       $(CPPFLAGS_EXTRA)                   $(XDEFINES:%=-D%) $(XINCLUDES:%=-I%)
 CFLAGS+=    $(CPPFLAGS) $(CFLAGS_STD)   $(CFLAGS_PKGCONFIG) $(CFLAGS_$(BUILDENV))   $(CFLAGS_$(TARGET))         $(CFLAGS_EXTRA)
 CXXFLAGS+=  $(CPPFLAGS) $(CXXFLAGS_STD) $(CFLAGS_PKGCONFIG) $(CXXFLAGS_$(BUILDENV)) $(CXXFLAGS_$(TARGET))       $(CFLAGS_EXTRA) $(CXXFLAGS_EXTRA)
-LDFLAGS+=               $(CFLAGS_STD) $(CXXFLAGS_STD) $(LDFLAGS_PKGCONFIG) $(LDFLAGS_$(BUILDENV))  $(LDFLAGS_$(TARGET))        $(CFLAGS_EXTRA) $(LDFLAGS_EXTRA)
+LDFLAGS+=               $(LDFLAGS_PKGCONFIG) $(LDFLAGS_$(BUILDENV))  $(LDFLAGS_$(TARGET))        $(CFLAGS_EXTRA) $(LDFLAGS_EXTRA)
 
 ifndef DIR
 FULLDIR:=       $(abspath .)/
@@ -404,7 +404,7 @@ $(OBJDIR)lib%.cfg.ldflags: $(OBJDIR)CFG_HAVE_lib%.h		$(PKG_DEPS)
 
 NORM_CONFIG=$(subst <,.lt.,$(subst >,.gt.,$(subst /,.sl.,$(CONFIG))))
 ORIG_TARGET=$(subst .lt.,<,$(subst .gt.,>,$(subst .sl.,/,$*)))
-CONFIG_DEPS=	$(MAKEFILE_DEPS) $(OBJDIR).mkdir			\
+CONFIG_DEPS=	$(PKG_DEPS) 						\
 		$(PKGCONFIGS:%=$(OBJDIR)pkg-config.mk)			\
 		$(PKG_LIBS:%=$(OBJDIR)pkg-config.mk)
 
@@ -432,7 +432,7 @@ $(OBJDIR)CFG-C++H_HAVE_%.cpp: $(OBJDIR).mkdir			$(CONFIG_DEPS)
 # Library
 $(OBJDIR)CFG_HAVE_lib%.h: $(OBJDIR)CFG-LIB_HAVE_lib%.c		$(PKG_DEPS)
 	$(PRINT_LIBCONFIG) $(LIB_CONFIG)
-$(OBJDIR)CFG-LIB_HAVE_lib%.c: $(OBJDIR).mkdir			$(PKG_DEPS)
+$(OBJDIR)CFG-LIB_HAVE_lib%.c: 					$(PKG_DEPS)
 	$(PRINT_COMMAND) echo 'int main() { return 0; }' > "$@"
 .PRECIOUS: $(OBJDIR)CFG-LIB_HAVE_lib%.c
 

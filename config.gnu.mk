@@ -106,28 +106,34 @@ TEST_ENV=	LD_LIBRARY_PATH=$(OUTPUT)
 #  Configuration checks
 #------------------------------------------------------------------------------
 
-CFG_UPPER=$(shell echo -n "$(ORIG_TARGET)" | tr '[:lower:]' '[:upper:]' | tr -c '[:alnum:]' '_')
-CFG_FLAGS=$(shell grep '// [A-Z]*FLAGS=' "$<" | sed -e 's|// [A-Z]*FLAGS=||g')
+CFG_UPPER=	$(shell echo -n "$(ORIG_TARGET)" | tr '[:lower:]' '[:upper:]' | tr -c '[:alnum:]' '_')
+CFG_LFLAGS=	$(LDFLAGS)						\
+		$(shell grep '// [A-Z]*FLAGS=' "$<" |			\
+			sed -e 's|// [A-Z]*FLAGS=||g')
+CFG_FLAGS=	$(CFG_LFLAGS)						\
+		$(shell $(CAT) $(PKG_CFLAGS) $(PKG_LDFLAGS))
 
-CFG_DEF=	echo '\#define'
-CFG_TEST=								\
-	$(CFG_FLAGS) "$<" -o "$<".exe > "$<".err 2>&1 &&		\
-	"$<".exe > "$<".out && echo 1 || echo 0
-CFG_UNDEF0=								\
+CFG_TEST=	"$<" -o "$<".exe > "$<".err 2>&1 &&			\
+		[ -x "$<".exe ] &&					\
+		"$<".exe > "$<".out && CFG_RC=1 || CFG_RC=0;
+CFG_UNDEF0=	$$CFG_RC						\
 	| sed -e 's|^\#define \(.*\) 0$$|/* \#undef \1 */|g' > "$@";	\
 	[ -f "$<".out ] && cat >> "$@" "$<".out; true
-CFG_CFLAGS=	$(CFLAGS)   $(shell $(CAT) $(PKG_CFLAGS) $(PKG_LDFLAGS))
-CFG_CXXFLAGS=	$(CXXFLAGS) $(shell $(CAT) $(PKG_CFLAGS) $(PKG_LDFLAGS))
 
-CFG_CC_CMD=	`$(CC)  $(CFG_CFLAGS)   $(CFLAGS_CONFIG_$*)        $(CFG_TEST)`
-CFG_CXX_CMD=	`$(CXX) $(CFG_CXXFLAGS) $(CXXFLAGS_CONFIG_$*)      $(CFG_TEST)`
-CFG_LIB_CMD=	`$(CC)   		$(CFLAGS_CONFIG_$*)   -l$* $(CFG_TEST)`
-CFG_FN_CMD=	`$(CC)  $(CFG_CFLAGS)   $(CFLAGS_CONFIG_$*)        $(CFG_TEST)`
+CFG_DEF=	echo '\#define'
 
-CC_CONFIG=	$(CFG_DEF) HAVE_$(CFG_UPPER)_H  $(CFG_CC_CMD)  $(CFG_UNDEF0)
-CXX_CONFIG=	$(CFG_DEF) HAVE_$(CFG_UPPER)    $(CFG_CXX_CMD) $(CFG_UNDEF0)
-LIB_CONFIG=	$(CFG_DEF) HAVE_LIB$(CFG_UPPER) $(CFG_LIB_CMD) $(CFG_UNDEF0)
-FN_CONFIG=	$(CFG_DEF) HAVE_$(CFG_UPPER) 	$(CFG_FN_CMD)  $(CFG_UNDEF0)
+CFG_CFLAGS=	$(CFLAGS)   $(CFG_FLAGS)
+CFG_CXXFLAGS=	$(CXXFLAGS) $(CFG_FLAGS)
+
+CFG_CC_CMD=	$(CC)  $(CFG_CFLAGS)   	$(CFLAGS_CONFIG_$*)        $(CFG_TEST)
+CFG_CXX_CMD=	$(CXX) $(CFG_CXXFLAGS) 	$(CXXFLAGS_CONFIG_$*)      $(CFG_TEST)
+CFG_LIB_CMD=	$(CC)  $(CFG_LFLAGS)	$(CFLAGS_CONFIG_$*)   -l$* $(CFG_TEST)
+CFG_FN_CMD=	$(CC)  $(CFG_CFLAGS)   	$(CFLAGS_CONFIG_$*)        $(CFG_TEST)
+
+CC_CONFIG=	$(CFG_CC_CMD)  $(CFG_DEF) HAVE_$(CFG_UPPER)_H 	$(CFG_UNDEF0)
+CXX_CONFIG=	$(CFG_CXX_CMD) $(CFG_DEF) HAVE_$(CFG_UPPER)   	$(CFG_UNDEF0)
+LIB_CONFIG=	$(CFG_LIB_CMD) $(CFG_DEF) HAVE_LIB$(CFG_UPPER)	$(CFG_UNDEF0)
+FN_CONFIG=	$(CFG_FN_CMD)  $(CFG_DEF) HAVE_$(CFG_UPPER) 	$(CFG_UNDEF0)
 
 MAKE_CONFIG=	sed	-e 's|^\#define \([^ ]*\) \(.*\)$$|\1=\2|g' 	\
 			-e 's|.*undef.*||g' < "$<" > "$@"
