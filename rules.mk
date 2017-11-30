@@ -383,6 +383,7 @@ PKG_DEPS=	$(MAKEFILE_DEPS) $(OBJDIR).mkdir
 $(OBJDIR)pkg-config.mk: $(PKG_CFLAGS) $(PKG_LDFLAGS) $(PKG_LIBS)
 	$(PRINT_COMMAND) (echo CFLAGS_PKGCONFIG=`$(CAT) $(PKG_CFLAGS)`; echo LDFLAGS_PKGCONFIG=`$(CAT) $(PKG_LDFLAGS) $(PKG_LIBS)`) > $@
 -include $(PKGCONFIGS:%=$(OBJDIR)pkg-config.mk)
+-include $(PKG_LIBS:%=$(OBJDIR)pkg-config.mk)
 
 $(OBJDIR)%?.pkg-config.cflags: 					$(PKG_DEPS)
 	$(PRINT_PKGCONFIG)  (pkg-config --cflags $* --silence-errors || true) > $@
@@ -404,7 +405,8 @@ $(OBJDIR)lib%.cfg.ldflags: $(OBJDIR)CFG_HAVE_lib%.h		$(PKG_DEPS)
 NORM_CONFIG=$(subst <,.lt.,$(subst >,.gt.,$(subst /,.sl.,$(CONFIG))))
 ORIG_TARGET=$(subst .lt.,<,$(subst .gt.,>,$(subst .sl.,/,$*)))
 CONFIG_DEPS=	$(MAKEFILE_DEPS) $(OBJDIR).mkdir			\
-		$(PKGCONFIGS:%=$(OBJDIR)pkg-config.mk)
+		$(PKGCONFIGS:%=$(OBJDIR)pkg-config.mk)			\
+		$(PKG_LIBS:%=$(OBJDIR)pkg-config.mk)
 
 config.h: $(NORM_CONFIG:%=$(OBJDIR)CFG_HAVE_%.h)
 	$(PRINT_GENERATE) cat $^ > $@
