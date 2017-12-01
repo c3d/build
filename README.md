@@ -125,12 +125,12 @@ you should see if you do that in the `build` directory itself:
     user	0m1.206s
     sys	0m0.750s
 
-The output of the build will be located by default in `build/objects`.
+The output of the build will be located by default in `.objects`.
 There are subdirectories corresponding to the build environment and
 the build target, so the final product could be for instance under
-`build/objects/macosx-clang/opt/hello`. This is explained below.
+`.objects/macosx-clang/opt/hello`. This is explained below.
 
-The log files will be located by default in `build/logs`, the latest
+The log files will be located by default in `.logs`, the latest
 one being called `make.log`.
 
 You can clean the build products with `make clean` and force a clean
