@@ -102,7 +102,7 @@ CXXFLAGS_extra=     $(CFLAGS_extra)
 
 ECHO=           /bin/echo
 TIME=           time
-RECURSE_MAKE=   $(MAKE) --no-print-directory COLORIZE=
+RECURSE_MAKE=   $(MAKE) --no-print-directory COLOR_FILTER=
 
 
 
@@ -153,8 +153,10 @@ SEDOPT_windows=	-u
 
 # Colorize warnings, errors and progress information
 LINE_BUFFERED=--line-buffered
-COLORIZE=   | grep $(LINE_BUFFERED) -v -e "^true &&" -e "^[A-Za-z0-9_-]\+\.\(c\|h\|cpp\|hpp\)$$"            \
-            | sed $(SEDOPT_$(OS_NAME))                                                                      \
+COLOR_FILTER=   | grep $(LINE_BUFFERED) -v -e "^true &&" -e "^[A-Za-z0-9_-]\+\.\(c\|h\|cpp\|hpp\)$$"            \
+	    $(COLORIZE)
+
+COLORIZE= | sed $(SEDOPT_$(OS_NAME))                                                                      \
             -e 's/^\(.*[,:(]\{1,\}[0-9]*[ :)]*\)\([Ww]arning\)/$(POS_COLOR)\1$(WRN_COLOR)\2$(DEF_COLOR)/g'  \
             -e 's/^\(.*[,:(]\{1,\}[0-9]*[ :)]*\)\([Ee]rror\)/$(POS_COLOR)\1$(ERR_COLOR)\2$(DEF_COLOR)/g'    \
             -e 's/^\(\[BEGIN\]\)\(.*\)$$/$(STEP_COLOR)\1\2$(CLR_EOLINE)$(DEF_COLOR)/g'                      \
@@ -169,7 +171,7 @@ COLORIZE=   | grep $(LINE_BUFFERED) -v -e "^true &&" -e "^[A-Za-z0-9_-]\+\.\(c\|
 ifndef V
 LOG_COMMANDS=       PRINT_COMMAND="true && " 2>&1              | \
                     tee $(BUILD_LOG)                             \
-                    $(COLORIZE) ;                                \
+                    $(COLOR_FILTER) ;                            \
                     RC=$${PIPESTATUS[0]} $${pipestatus[1]} ;     \
                     $(ECHO) `grep -v '^true &&' $(BUILD_LOG)   | \
                              grep -i $(ERROR_MSG) $(BUILD_LOG) | \
