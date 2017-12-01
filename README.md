@@ -136,6 +136,32 @@ one being called `make.log`.
 You can clean the build products with `make clean` and force a clean
 build with `make rebuild`.
 
+### Build tips
+
+The `build` makefiles are self-documented. You can get information
+about the avaiable build targets using `make help`.
+
+There are three primary build targets, `debug`, `opt` and
+`release`, which are described in detail below. Build objects for
+these primary targets are kept in separate locations, so that you can
+quickly alternate between debug and optimized builds.
+
+You can customize your build using either command-line variables or
+target prefixes. Here are some examples:
+
+    make v-debug          # Verbose debug build using v- prefix
+    make V=1 debug        # Verbose build using variable
+    make nocolor-debug    # Do not colorize output (prefix)
+    make COLORIZE= debug  # Do not colorize output (variable)
+    make notime-debug     # Do not collect build time (prefix)
+    make TIME= debug      # Do not collect build time (variable)
+
+You can build the target you prefer by default by setting the `TARGET`
+environment variable, e.g.
+
+    export TARGET=notime-nocolor-debug
+    make                  # Builds a 'notime-nocolor-debug'
+
 
 ## Testing the products
 
@@ -170,14 +196,17 @@ it is called `count-characters.test`.
 
 The default build is an optimized build similar to what you would
 achieve by running `make opt`. It is well optimized, but still retains
-some debugging capabilities.
+some debugging capabilities. The `DEBUG` and `OPTIMIZED` macros are
+defined.
 
 If you need more debugging capabilities, you can create a debug build
 by using `make debug`. This disables most optimizations, making it
-easier for the debugger to relate machine code to source code.
+easier for the debugger to relate machine code to source code. The
+`DEBUG` macro is defined for these builds.
 
 If you want to remove all debugging symbols, you can generate a
-release build by using `make release`.
+release build by using `make release`. In that configuration, the
+`NDEBUG`, `OPTIMIZED` and `RELEASE` flags are defined.
 
 Finally, you can build for profiling using `make profile` and
 benchmark the result using `make benchmark`. This is still only
