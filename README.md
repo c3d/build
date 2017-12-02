@@ -30,8 +30,9 @@ for at least one much larger program.
   only built the first time, unless you request a "deep" build)
 * Portable (tested on Linux, macOS and Windows platforms)
 
-You can find examples of how I use 'build' in some of my other projects:
+You can find examples of how I use 'build' in other projects:
 
+* [SPICE - Simple Protocol for Independent Computing Environments](https://github.com/c3d/spice)
 * [Flight recorder](https://github.com/c3d/recorder/blob/master/Makefile)
 * [XL programming language](https://github.com/c3d/XL-programming-language/blob/master/xlr/Makefile)
 * [ELFE programming language](https://github.com/c3d/elfe/blob/master/src/Makefile)
