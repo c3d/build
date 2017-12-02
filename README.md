@@ -426,3 +426,8 @@ of this software, this interpretation will prevail. If you believe
 that I am in error in my understanding of the GPL v3, please send me
 e-mail or raise an issue on GitHub or GitLab, and I will add a
 licensing exception to that effect.
+
+
+## Comparing build vs. autoconf on a real project
+
+[![Building SPICE: autoconf vs. c3d/build](https://img.youtube.com/vi/uAAynpfCJa0/0.jpg)](https://www.youtube.com/watch?v=uAAynpfCJa0)
