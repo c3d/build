@@ -1,5 +1,5 @@
 #******************************************************************************
-# config.auto.mk                                              Recorder project 
+# config.auto.mk                                              Recorder project
 #******************************************************************************
 #
 #  File Description:
@@ -19,11 +19,12 @@
 #******************************************************************************
 
 # Identification of the default build environment
-BUILDENV=$(BUILDENV_$(shell uname -s | sed s/CYGWIN.*/Cygwin/ | sed s/MINGW.*/MinGW/))
+BUILDENV=$(BUILDENV_$(shell uname -s | sed s/CYGWIN.*/Cygwin/ | sed s/MINGW.*/MinGW/ | sed s/MSYS.*/MSYS/g))
 BUILDENV_Darwin=$(shell clang --version > /dev/null 2>&1 && echo macosx-clang || echo macosx)
 BUILDENV_Linux=linux
 BUILDENV_Cygwin=cygwin
 BUILDENV_MinGW=mingw
+BUILDENV_MSYS=msys
 
 # Just in case (leftovers from a former life ;-)
 BUILDENV_HP-UX=hpux
