@@ -1,5 +1,5 @@
 #******************************************************************************
-# config.cygwin.mk                                            Recorder project 
+# config.cygwin.mk                                            Recorder project
 #******************************************************************************
 #
 #  File Description:
@@ -22,4 +22,4 @@
 DEFINES_cygwin=CONFIG_CYGWIN UNICODE _WIN32 WIN32
 OS_NAME_cygwin=windows
 
-include $(BUILD)config.mingw.mk
+include $(BUILD)config.gnu.mk
