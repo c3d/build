@@ -31,9 +31,6 @@ include $(BUILD)config.gnu.mk
 # On Windows, DLLs have to go with the .exe
 PREFIX_DLL:=$(PREFIX_DLL:$(PREFIX_LIB)=$(PREFIX_BIN))
 
-# MinGW does not have --line-buffered for colorized builds
-LINE_BUFFERED=
-
 # Windows overrides for extensions
 EXE_EXT=        .exe
 LIB_EXT=        .a
