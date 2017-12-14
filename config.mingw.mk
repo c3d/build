@@ -38,3 +38,6 @@ DLL_EXT=        .dll
 
 # MinGW has no 'install' program
 INSTALL=	cp
+
+# DO not add an rpath option on Windows
+MAKE_DLL=	$(LD) -shared	$(LINK_CMDLINE) $(LDFLAGS) $(LDFLAGS_$*) -o $@
