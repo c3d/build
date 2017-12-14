@@ -25,7 +25,7 @@ OS_NAME_cygwin=windows
 include $(BUILD)config.gnu.mk
 
 EXE_EXT=	.exe
-LIB_EXT=	.lib
+LIB_EXT=	.a
 DLL_EXT=	.dll
 OBJ_EXT=	.obj
 
