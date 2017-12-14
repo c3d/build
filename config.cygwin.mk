@@ -23,3 +23,10 @@ DEFINES_cygwin=CONFIG_CYGWIN UNICODE _WIN32 WIN32
 OS_NAME_cygwin=windows
 
 include $(BUILD)config.gnu.mk
+
+EXE_EXT=	.exe
+LIB_EXT=	.lib
+DLL_EXT=	.dll
+OBJ_EXT=	.obj
+
+MAKE_DLL=	$(LD) -shared	$(LINK_CMDLINE) $(LDFLAGS) $(LDFLAGS_$*) -o $@
