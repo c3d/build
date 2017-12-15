@@ -42,8 +42,9 @@ CAT=		cat /dev/null
 #  Compilation flags
 #------------------------------------------------------------------------------
 
-CFLAGS_STD=	$(CC_STD:%=-std=%)	-fPIC
-CXXFLAGS_STD=	$(CXX_STD:%=-std=%)	-fPIC
+CFLAGS_PIC=	-fPIC
+CFLAGS_STD=	$(CC_STD:%=-std=%)	$(CFLAGS_PIC)
+CXXFLAGS_STD=	$(CXX_STD:%=-std=%)	$(CFLAGS_PIC)
 
 CFLAGS_debug=   -g -Wall -fno-inline
 CFLAGS_opt=     -g -O3 -Wall
