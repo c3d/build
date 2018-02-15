@@ -458,7 +458,7 @@ endif
 #  Clang format
 #------------------------------------------------------------------------------
 
-clang-format:	$(CLANG_FORMAT_SOURCES:%=%.clang-format)
+reformat clang-format:	$(CLANG_FORMAT_SOURCES:%=%.clang-format)
 %.clang-format:
 	$(PRINT_REFORMAT)	clang-format $* > $*.tmp && mv $*.tmp $*
 
