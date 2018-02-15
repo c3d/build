@@ -134,6 +134,7 @@ help:
 	@$(ECHO) "  make check          : Build product, then run tests"
 	@$(ECHO) "  make benchmark      : Build product, then run benchmarks"
 	@$(ECHO) "  make install        : Build and install result"
+	@$(ECHO) "  make clang-format   : Reformat sources using clang-format"
 	@$(ECHO) "  make v-[target]     : Build target in 'verbose' mode"
 	@$(ECHO) "  make d-[target]     : Deep-checking of library dependencies"
 	@$(ECHO) "  make top-[target]   : Rebuild from top-level directory"
@@ -295,6 +296,7 @@ PRINT_TEST= 	$(PRINT_COMMAND) $(INFO) "[TEST]" $(@:.test=) ;
 PRINT_CONFIG= 	$(PRINT_COMMAND) $(INFO) "[CONFIG]" "$(ORIG_TARGET)" ;
 PRINT_PKGCONFIG=$(PRINT_COMMAND) $(INFO) "[PKGCONFIG]" "$*" ;
 PRINT_LIBCONFIG=$(PRINT_COMMAND) $(INFO) "[LIBCONFIG]" "lib$*" ;
+PRINT_REFORMAT= $(PRINT_COMMAND) $(INFO) "[REFORMAT]" "$*" $(COLORIZE);
 endif
 
 logs.mkdir: $(LOGS).mkdir $(dir $(LAST_LOG))/.mkdir
@@ -450,6 +452,16 @@ $(OBJDIR)CFG-FN_HAVE_%.c: config/check_%.c			$(CONFIG_DEPS)
 .PRECIOUS: $(OBJDIR)CFG-FN_HAVE_%.c
 
 endif
+
+
+#------------------------------------------------------------------------------
+#  Clang format
+#------------------------------------------------------------------------------
+
+clang-format:	$(CLANG_FORMAT_SOURCES:%=%.clang-format)
+%.clang-format:
+	$(PRINT_REFORMAT)	clang-format $* > $*.tmp && mv $*.tmp $*
+
 
 #------------------------------------------------------------------------------
 #  Makefile optimization tricks

@@ -58,6 +58,9 @@ TO_INSTALL=	$(OUTPUT_EXE:%=%.install_exe)		\
 		$(DLL_INSTALL:%=%.install_dll)		\
 		$(HDR_INSTALL:%=%.install_hdr)
 
+# Sources to reformat
+CLANG_FORMAT_SOURCES=$(SOURCES) $(HDR_INSTALL)
+
 
 #------------------------------------------------------------------------------
 #   Installation paths

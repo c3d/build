@@ -403,6 +403,14 @@ is optional.
                     gstreamer-1.0
 
 
+## Other stuff
+
+There a few utility targets, in particular:
+
+* `clang-format` reformats all sources specified in `CLANG_FORMAT_SOURCES`
+  (which defaults to `SOURCES` and `HDR_INSTALL`)
+
+
 ## Redistribution
 
 The 'build' project is released under the GNU General Public License
